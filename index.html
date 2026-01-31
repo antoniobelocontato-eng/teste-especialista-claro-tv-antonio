@@ -3,158 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claro TV+ | Especialista</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Portal de Vendas - Streaming Brasil</title>
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; overflow-x: hidden; }
-        .gradient-header { background: linear-gradient(180deg, #ee1d23 0%, rgba(15,23,42,0) 100%); }
-        .glass-card { background: #fff; border-radius: 30px; padding: 25px; color: #1e293b; margin-bottom: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; }
-        .card-app { background: #fff; border-radius: 20px; height: 60px; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid #e2e8f0; transition: 0.3s; padding: 10px; }
-        .is-active-app { border: 4px solid #ee1d23; box-shadow: 0 0 20px rgba(238, 29, 35, 0.4); transform: scale(1.05); }
-        .menu-item { border-bottom: 1px solid #f1f5f9; width: 100%; text-align: left; padding: 18px 20px; font-size: 15px; font-weight: 500; color: #1e293b; display: flex; align-items: center; }
-        .hidden { display: none !important; }
-        .poster-img { width: 100%; max-width: 220px; border-radius: 20px; margin: 0 auto 1.5rem; display: block; object-fit: cover; height: 330px; }
-        .btn-action { width: 100%; padding: 12px; border-radius: 15px; font-weight: 900; text-transform: uppercase; font-size: 11px; margin-top: 8px; transition: 0.3s; }
-        /* Modal Style */
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
-        .modal-content { background: #fff; margin: 10% auto; padding: 20px; width: 90%; max-width: 600px; border-radius: 30px; color: #1e293b; }
+        :root { --claro-red: #ee1d23; --dark-bg: #141414; --card-bg: #1f1f1f; }
+        body { background: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        
+        /* Navegação */
+        .header-nav { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; align-items: center; }
+        .dropdown { position: relative; display: inline-block; }
+        .dropbtn { background: #333; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .dropdown-content { display: none; position: absolute; background: #333; min-width: 160px; z-index: 10; border-radius: 5px; }
+        .dropdown-content a { color: white; padding: 12px; text-decoration: none; display: block; }
+        .dropdown-content a:hover { background: var(--claro-red); }
+        .dropdown:hover .dropdown-content { display: block; }
+
+        .streaming-filters button { background: #222; color: white; border: 1px solid #444; padding: 10px 15px; cursor: pointer; border-radius: 5px; }
+        .streaming-filters button:hover { background: var(--claro-red); border-color: var(--claro-red); }
+
+        /* Grid e Cards */
+        .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #333; }
+        .card-streamings { background: #000; color: #ffd700; padding: 10px; text-align: center; font-size: 0.75rem; font-weight: bold; }
+        .card-title { padding: 10px; font-size: 1.1rem; text-align: center; margin: 0; min-height: 50px; }
+        .card-poster { width: 100%; height: 380px; object-fit: cover; }
+        .card-content { padding: 15px; flex-grow: 1; }
+        .card-synopsis { font-size: 0.85rem; color: #bbb; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-footer { padding: 15px; background: #111; display: flex; flex-direction: column; gap: 8px; }
+        
+        .btn-yt { background: #ff0000; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-temp { background: #007bff; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .pop-note { font-size: 0.9rem; color: #4caf50; font-weight: bold; text-align: right; }
+
+        /* Modal Temporadas */
+        #modal-temporadas { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow-y: auto; }
+        .modal-content { background: #222; margin: 5% auto; padding: 25px; width: 90%; max-width: 800px; border-radius: 10px; }
+        .temp-item { margin-bottom: 10px; border: 1px solid #444; }
+        .temp-header { width: 100%; background: #333; color: white; padding: 15px; text-align: left; border: none; cursor: pointer; font-size: 1rem; }
+        .ep-list { padding: 15px; background: #1a1a1a; display: none; }
+        .ep-item { margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .ep-item h4 { color: #ffd700; margin: 0 0 5px 0; }
+        .ep-item p { font-size: 0.85rem; color: #ccc; margin: 0; }
+        .close-modal { float: right; font-size: 2rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="page-home">
-    <header class="gradient-header pt-10 pb-16 px-6 text-center">
-        <h1 class="text-3xl font-black italic uppercase mb-6 text-white tracking-tighter">CLARO TV+ <br><span class="text-white/50 text-2xl">ESPECIALISTA</span></h1>
-        
-        <div class="flex justify-center gap-2 flex-wrap mb-6">
-            <button onclick="toggleMenu('lista-historico')" class="px-4 py-2 rounded-full bg-white/20 text-[9px] font-black uppercase">📅 Histórico</button>
-            <button onclick="toggleMenu('lista-generos')" class="px-4 py-2 rounded-full bg-white/20 text-[9px] font-black uppercase">🎭 Gêneros</button>
-            <button onclick="navegarPara('page-estreias')" class="px-4 py-2 rounded-full bg-yellow-400 text-black text-[9px] font-black uppercase">Lançamentos 2026</button>
-            <button onclick="resetar()" class="px-4 py-2 rounded-full bg-red-600 text-white text-[9px] font-black uppercase">Reset</button>
+    <nav class="header-nav">
+        <div class="dropdown">
+            <button class="dropbtn">📅 Histórico</button>
+            <div class="dropdown-content">
+                <a href="#" onclick="buscarComFiltro('2025-01-01')">2025 até hoje</a>
+                <a href="#" onclick="buscarComFiltro('2024-01-01')">2024 até hoje</a>
+                <a href="#" onclick="buscarComFiltro('')">Todo o Histórico</a>
+            </div>
         </div>
-
-        <div id="lista-historico" class="hidden bg-white max-w-sm mx-auto rounded-[30px] shadow-2xl absolute left-0 right-0 z-50 mt-2">
-            <button onclick="setAno('2026')" class="menu-item">✓ 2026 (Atual)</button>
-            <button onclick="setAno('2025')" class="menu-item">De 2025 até hoje</button>
-            <button onclick="setAno('2024')" class="menu-item">De 2024 até hoje</button>
-            <button onclick="setAno('all')" class="menu-item">Todo o histórico</button>
+        <div class="streaming-filters">
+            <button onclick="filtrarStreaming(8)">Netflix</button>
+            <button onclick="filtrarStreaming(337)">Disney+</button>
+            <button onclick="filtrarStreaming(384)">HBO Max</button>
+            <button onclick="filtrarStreaming(119)">Prime Video</button>
+            <button onclick="filtrarStreaming(350)">Apple TV+</button>
+            <button onclick="filtrarStreaming(307)">Globoplay</button>
         </div>
+    </nav>
 
-        <div id="lista-generos" class="hidden bg-white max-w-sm mx-auto rounded-[30px] shadow-2xl absolute left-0 right-0 z-50 mt-2">
-            <div id="generos-container"></div>
+    <h2 id="view-title">🔥 Populares no Brasil</h2>
+    <div id="grid-filmes" class="grid-layout"></div>
+    <br><hr><br>
+    <h2>📺 Séries Populares</h2>
+    <div id="grid-series" class="grid-layout"></div>
+
+    <div id="modal-temporadas">
+        <div class="modal-content">
+            <span class="close-modal" onclick="fecharModal()">&times;</span>
+            <div id="lista-detalhada"></div>
         </div>
-
-        <div id="streaming-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 bg-white/90 p-4 rounded-[35px] max-w-xl mx-auto mt-6 shadow-2xl"></div>
-    </header>
-
-    <main class="max-w-4xl mx-auto px-6 space-y-12 pb-20">
-        <div id="app-filmes"></div>
-        <div id="app-series"></div>
-    </main>
-</div>
-
-<div id="modal-temporadas" class="modal">
-    <div class="modal-content">
-        <div class="flex justify-between items-center mb-4">
-            <h2 id="modal-titulo" class="font-black uppercase italic text-xl">Temporadas</h2>
-            <button onclick="fecharModal()" class="text-red-600 font-bold">FECHAR X</button>
-        </div>
-        <div id="lista-episodios" class="space-y-4"></div>
     </div>
-</div>
 
-<script>
-const API_KEY="a3e15f985435c14269f8f3e9bfacb207";
-const BASE="https://api.themoviedb.org/3";
-const PROVIDERS = { Netflix: 8, "HBO MAX": 1899, "Disney+": 337, "Apple TV+": 350, Globoplay: 307, "Prime Video": 119 };
-const LOGOS = { 
-    Netflix: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
-    "HBO MAX": "https://logosmarcas.net/wp-content/uploads/2022/01/HBO-Max-Logo.png",
-    "Disney+": "https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney%2B_logo.svg",
-    "Apple TV+": "https://upload.wikimedia.org/wikipedia/commons/2/28/Apple_TV_Plus_Logo.svg",
-    Globoplay: "https://upload.wikimedia.org/wikipedia/commons/b/b0/Globoplay_logo_2020.svg",
-    "Prime Video": "https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg"
-};
-const GENRES = [{id:28, name:"Ação"}, {id:35, name:"Comédia"}, {id:10749, name:"Romance"}, {id:18, name:"Drama"}, {id:27, name:"Terror"}, {id:10762, name:"Kids"}];
+    <script>
+        const API_KEY = "a3e15f985435c14269f8f3e9bfacb207";
+        const BASE_URL = "https://api.themoviedb.org/3";
 
-let appAtivo = null, generoAtivo = null, anoAtivo = '2026';
+        async function init() {
+            await carregarDados('movie', 'grid-filmes');
+            await carregarDados('tv', 'grid-series');
+        }
 
-function init() {
-    const grid = document.getElementById("streaming-grid");
-    grid.innerHTML = "";
-    Object.keys(PROVIDERS).forEach(p => {
-        const d = document.createElement("div");
-        d.className = `card-app ${appAtivo === p ? 'is-active-app' : ''}`;
-        d.onclick = () => { appAtivo = (appAtivo === p) ? null : p; init(); render(); };
-        d.innerHTML = `<img src="${LOGOS[p]}" class="h-6 pointer-events-none">`;
-        grid.appendChild(d);
-    });
-    document.getElementById("generos-container").innerHTML = GENRES.map(g => `<button onclick="setGenero(${g.id})" class="menu-item">${g.name}</button>`).join("");
-}
+        async function carregarDados(tipo, containerId, extraParams = '') {
+            const url = `${BASE_URL}/discover/${tipo}?api_key=${API_KEY}&language=pt-BR&sort_by=popularity.desc&watch_region=BR&page=1${extraParams}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            renderCards(data.results.slice(0, 5), containerId, tipo);
+        }
 
-function toggleMenu(id) { document.getElementById(id).classList.toggle('hidden'); }
-function setGenero(id) { generoAtivo = id; toggleMenu('lista-generos'); render(); }
-function setAno(ano) { anoAtivo = ano; toggleMenu('lista-historico'); render(); }
-function resetar() { location.reload(); }
-
-async function render() {
-    const pId = appAtivo ? PROVIDERS[appAtivo] : Object.values(PROVIDERS).join('|');
-    let params = `api_key=${API_KEY}&language=pt-BR&watch_region=BR&with_watch_providers=${pId}&sort_by=popularity.desc`;
-    if(generoAtivo) params += `&with_genres=${generoAtivo}`;
-    if(anoAtivo !== 'all') params += `&primary_release_date.gte=${anoAtivo}-01-01`;
-
-    const [mRes, tRes] = await Promise.all([
-        fetch(`${BASE}/discover/movie?${params}`).then(r => r.json()),
-        fetch(`${BASE}/discover/tv?${params.replace('primary_release_date','first_air_date')}`).then(r => r.json())
-    ]);
-
-    renderConteudo("app-filmes", "🎬 5 FILMES POPULARES", mRes.results?.slice(0, 5), 'movie');
-    renderConteudo("app-series", "📺 5 SÉRIES POPULARES", tRes.results?.slice(0, 5), 'tv');
-}
-
-async function renderConteudo(divId, titulo, dados, tipo) {
-    const container = document.getElementById(divId);
-    container.innerHTML = `<h2 class="text-2xl font-black uppercase italic mb-8 border-l-4 border-red-600 pl-4 text-white">${titulo}</h2>`;
-    
-    for (const item of dados) {
-        const providers = await fetch(`${BASE}/${tipo}/${item.id}/watch/providers?api_key=${API_KEY}`).then(r => r.json());
-        const ondeAssistir = providers.results?.BR?.flatrate?.map(p => p.provider_name).join(" | ") || "Verificar disponibilidade";
-        
-        const videos = await fetch(`${BASE}/${tipo}/${item.id}/videos?api_key=${API_KEY}&language=pt-BR`).then(r => r.json());
-        const trailer = videos.results.find(v => v.type === "Trailer")?.key;
-
-        container.innerHTML += `
-            <div class="glass-card">
-                <div class="bg-red-50 rounded-xl p-2 text-center text-[10px] font-black mb-4 uppercase text-red-600 border border-red-100">${ondeAssistir}</div>
-                <h3 class="text-xl font-black text-center mb-4 uppercase leading-tight">${item.title || item.name}</h3>
-                <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="poster-img shadow-2xl border-4 border-white">
-                <p class="text-sm text-center line-clamp-3 mb-6 px-2 text-gray-500 italic">"${item.overview || "Sem sinopse disponível."}"</p>
+        async function renderCards(lista, containerId, tipo) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+            for (const item of lista) {
+                const providers = await getProviders(tipo, item.id);
+                const trailer = await getTrailer(tipo, item.id);
                 
-                <div class="flex gap-2">
-                    ${trailer ? `<button onclick="window.open('https://youtube.com/watch?v=${trailer}')" class="btn-action bg-red-600 text-white">Ver Trailer</button>` : ''}
-                    ${tipo === 'tv' ? `<button onclick="abrirTemporadas(${item.id}, '${item.name}')" class="btn-action bg-blue-600 text-white">Temporadas</button>` : ''}
+                container.innerHTML += `
+                    <div class="card">
+                        <div class="card-streamings">${providers}</div>
+                        <h3 class="card-title">${item.title || item.name}</h3>
+                        <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="card-poster">
+                        <div class="card-content">
+                            <p class="card-synopsis">${item.overview || "Sem sinopse."}</p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="pop-note">Nota: ${item.vote_average.toFixed(1)}</div>
+                            <button class="btn-yt" onclick="window.open('${trailer}')">Trailer YouTube</button>
+                            ${tipo === 'tv' ? `<button class="btn-temp" onclick="abrirTemporadas(${item.id})">Temporadas</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        async function getProviders(tipo, id) {
+            const res = await fetch(`${BASE_URL}/${tipo}/${id}/watch/providers?api_key=${API_KEY}`);
+            const data = await res.json();
+            const br = data.results?.BR?.flatrate || [];
+            const nomes = br.map(p => p.provider_name).slice(0, 3);
+            return nomes.length > 0 ? nomes.join(" | ") : "Consultar Disponibilidade";
+        }
+
+        async function getTrailer(tipo, id) {
+            const res = await fetch(`${BASE_URL}/${tipo}/${id}/videos?api_key=${API_KEY}&language=pt-BR`);
+            const data = await res.json();
+            const trail = data.results.find(v => v.type === "Trailer") || data.results[0];
+            return trail ? `https://www.youtube.com/watch?v=${trail.key}` : "#";
+        }
+
+        // --- SISTEMA DE TEMPORADAS E EPISÓDIOS ---
+        async function abrirTemporadas(id) {
+            const res = await fetch(`${BASE_URL}/tv/${id}?api_key=${API_KEY}&language=pt-BR`);
+            const serie = await res.json();
+            let html = `<h2>${serie.name}</h2>`;
+            
+            for (const t of serie.seasons) {
+                if (t.season_number === 0) continue;
+                html += `
+                    <div class="temp-item">
+                        <button class="temp-header" onclick="toggleEp(${id}, ${t.season_number})">
+                            ${t.name} (${t.episode_count} Eps)
+                        </button>
+                        <div id="eps-cont-${t.season_number}" class="ep-list"></div>
+                    </div>
+                `;
+            }
+            document.getElementById('lista-detalhada').innerHTML = html;
+            document.getElementById('modal-temporadas').style.display = "block";
+        }
+
+        async function toggleEp(id, num) {
+            const cont = document.getElementById(`eps-cont-${num}`);
+            if (cont.style.display === "block") { cont.style.display = "none"; return; }
+            
+            const res = await fetch(`${BASE_URL}/tv/${id}/season/${num}?api_key=${API_KEY}&language=pt-BR`);
+            const data = await res.json();
+            cont.innerHTML = data.episodes.map(e => `
+                <div class="ep-item">
+                    <h4>Ep ${e.episode_number}: ${e.name}</h4>
+                    <p>${e.overview || "Sem descrição."}</p>
                 </div>
-                <div class="mt-4 text-center font-black text-gray-400 text-[10px] uppercase tracking-widest">Popularidade: ${Math.round(item.vote_average * 10)}% de aprovação</div>
-            </div>`;
-    }
-}
+            `).join('');
+            cont.style.display = "block";
+        }
 
-async function abrirTemporadas(id, nome) {
-    const res = await fetch(`${BASE}/tv/${id}?api_key=${API_KEY}&language=pt-BR`).then(r => r.json());
-    document.getElementById("modal-titulo").innerText = nome;
-    document.getElementById("lista-episodios").innerHTML = res.seasons.map(s => `
-        <details class="bg-gray-100 p-4 rounded-2xl">
-            <summary class="font-black uppercase text-sm cursor-pointer">${s.name} (${s.episode_count} Eps)</summary>
-            <p class="text-xs mt-2 text-gray-600">${s.overview || "Sinopse da temporada não disponível."}</p>
-        </details>
-    `).join("");
-    document.getElementById("modal-temporadas").style.display = "block";
-}
+        function buscarComFiltro(data) {
+            const f = data ? `&primary_release_date.gte=${data}&first_air_date.gte=${data}` : '';
+            carregarDados('movie', 'grid-filmes', f);
+            carregarDados('tv', 'grid-series', f);
+        }
 
-function fecharModal() { document.getElementById("modal-temporadas").style.display = "none"; }
+        function filtrarStreaming(pid) {
+            const f = `&with_watch_providers=${pid}&watch_region=BR`;
+            carregarDados('movie', 'grid-filmes', f);
+            carregarDados('tv', 'grid-series', f);
+        }
 
-init(); render();
-</script>
+        function fecharModal() { document.getElementById('modal-temporadas').style.display = "none"; }
+        
+        init();
+    </script>
 </body>
 </html>
