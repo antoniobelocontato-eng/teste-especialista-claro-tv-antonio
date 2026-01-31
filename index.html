@@ -15,6 +15,7 @@
         .menu-item { border-bottom: 1px solid #f1f5f9; width: 100%; text-align: left; padding: 18px 20px; font-size: 15px; font-weight: 500; color: #1e293b; display: flex; align-items: center; }
         .hidden { display: none !important; }
         .btn-novidade { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: white; padding: 18px 30px; border-radius: 999px; font-size: 13px; font-weight: 900; text-transform: uppercase; width: 100%; transition: 0.3s; }
+        .poster-img { width: 100%; max-width: 220px; border-radius: 20px; margin: 0 auto 1.5rem; display: block; }
     </style>
 </head>
 <body>
@@ -32,8 +33,8 @@
         </div>
 
         <div id="lista-historico" class="hidden bg-white max-w-sm mx-auto rounded-[30px] shadow-2xl absolute left-0 right-0 z-50 mt-2">
-            <button onclick="setAno('2025')" class="menu-item">✓ De 2025 até hoje</button>
-            <button onclick="setAno('2024')" class="menu-item">De 2024 até hoje</button>
+            <button onclick="setAno('2026')" class="menu-item">✓ 2026 (Atual)</button>
+            <button onclick="setAno('2025')" class="menu-item">De 2025 até hoje</button>
             <button onclick="setAno('all')" class="menu-item">Todo o histórico</button>
         </div>
 
@@ -54,9 +55,8 @@
     <div class="max-w-xl mx-auto text-center space-y-8">
         <h2 class="text-4xl font-black italic uppercase text-yellow-400">🚀 LANÇAMENTOS NO BRASIL</h2>
         <div class="space-y-4">
-            <button onclick="carregarNovidades('movie_streaming')" class="btn-novidade">Filmes Streaming (Em Breve)</button>
-            <button onclick="carregarNovidades('tv_streaming')" class="btn-novidade">Séries Streaming (Em Breve)</button>
-            <button onclick="carregarNovidades('cinema')" class="btn-novidade">Estreias Cinema</button>
+            <button onclick="carregarNovidades('movie')" class="btn-novidade">Filmes nos Streamings</button>
+            <button onclick="carregarNovidades('tv')" class="btn-novidade">Séries nos Streamings</button>
         </div>
         <button onclick="navegarPara('page-home')" class="text-white/30 uppercase text-[11px] font-black pt-8 block mx-auto">← VOLTAR PARA A HOME</button>
         <div id="container-novidades" class="mt-12 text-left space-y-6"></div>
@@ -64,6 +64,7 @@
 </div>
 
 <script>
+// CONFIGURAÇÕES BASE
 const API_KEY="a3e15f985435c14269f8f3e9bfacb207";
 const BASE="https://api.themoviedb.org/3";
 const PROVIDERS = { Netflix: 8, "HBO MAX": 1899, "Disney+": 337, "Apple TV+": 350, Globoplay: 307, "Prime Video": 119 };
@@ -77,15 +78,21 @@ const LOGOS = {
 };
 const GENRES = [{id:28, name:"Ação"}, {id:35, name:"Comédia"}, {id:10749, name:"Romance"}, {id:18, name:"Drama"}, {id:27, name:"Terror"}, {id:10762, name:"Kids"}];
 
-let appAtivo = null, generoAtivo = null, anoAtivo = '2025';
+let appAtivo = null, generoAtivo = null, anoAtivo = '2026';
 
+// INICIALIZAÇÃO DA INTERFACE
 function init() {
     const grid = document.getElementById("streaming-grid");
     grid.innerHTML = "";
     Object.keys(PROVIDERS).forEach(p => {
         const d = document.createElement("div");
         d.className = `card-app ${appAtivo === p ? 'is-active-app' : ''}`;
-        d.onclick = (e) => { e.stopPropagation(); appAtivo = (appAtivo === p) ? null : p; init(); render(); };
+        d.onclick = (e) => { 
+            e.stopPropagation(); 
+            appAtivo = (appAtivo === p) ? null : p; 
+            init(); 
+            render(); 
+        };
         d.innerHTML = `<img src="${LOGOS[p]}" class="h-8 pointer-events-none">`;
         grid.appendChild(d);
     });
@@ -94,42 +101,93 @@ function init() {
     gCont.innerHTML = GENRES.map(g => `<button onclick="setGenero(${g.id})" class="menu-item">${g.name}</button>`).join("");
 }
 
+// NAVEGAÇÃO E FILTROS
 function toggleMenu(id) { document.getElementById(id).classList.toggle('hidden'); }
-function navegarPara(id) { document.getElementById('page-home').classList.add('hidden'); document.getElementById('page-estreias').classList.add('hidden'); document.getElementById(id).classList.remove('hidden'); }
+function navegarPara(id) { 
+    document.getElementById('page-home').classList.add('hidden'); 
+    document.getElementById('page-estreias').classList.add('hidden'); 
+    document.getElementById(id).classList.remove('hidden'); 
+}
 function setGenero(id) { generoAtivo = id; toggleMenu('lista-generos'); render(); }
 function setAno(ano) { anoAtivo = ano; toggleMenu('lista-historico'); render(); }
 function resetar() { location.reload(); }
 
+// BUSCA PRINCIPAL (HOME)
 async function render() {
     const pId = appAtivo ? PROVIDERS[appAtivo] : Object.values(PROVIDERS).join('|');
-    const params = `api_key=${API_KEY}&language=pt-BR&watch_region=BR&with_watch_providers=${pId}&sort_by=popularity.desc${generoAtivo ? `&with_genres=${generoAtivo}` : ''}${anoAtivo === 'all' ? '' : `&primary_release_date.gte=${anoAtivo}-01-01`}`;
+    let params = `api_key=${API_KEY}&language=pt-BR&watch_region=BR&with_watch_providers=${pId}&sort_by=popularity.desc`;
     
+    if(generoAtivo) params += `&with_genres=${generoAtivo}`;
+    if(anoAtivo !== 'all') params += `&primary_release_date.gte=${anoAtivo}-01-01`;
+
     try {
         const [mRes, tRes] = await Promise.all([
             fetch(`${BASE}/discover/movie?${params}`).then(r => r.json()),
             fetch(`${BASE}/discover/tv?${params.replace('primary_release_date','first_air_date')}`).then(r => r.json())
         ]);
-        renderConteudo("app-filmes", "🎬 FILMES POPULARES", mRes.results?.slice(0, 5));
-        renderConteudo("app-series", "📺 SÉRIES POPULARES", tRes.results?.slice(0, 5));
+        
+        const tituloSufixo = appAtivo ? `NA ${appAtivo.toUpperCase()}` : "NO BRASIL";
+        renderConteudo("app-filmes", `🎬 5 FILMES POPULARES ${tituloSufixo}`, mRes.results?.slice(0, 5));
+        renderConteudo("app-series", `📺 5 SÉRIES POPULARES ${tituloSufixo}`, tRes.results?.slice(0, 5));
     } catch (e) { console.error("Erro ao carregar dados"); }
 }
 
-function renderConteudo(divId, titulo, dados) {
-    const container = document.getElementById(divId);
-    container.innerHTML = `<h2 class="text-2xl font-black uppercase italic mb-8 border-l-4 border-red-600 pl-4">${titulo}</h2>`;
-    if(!dados) return;
-    dados.forEach(item => {
+// ADICIONADOS RECENTEMENTE (ÚLTIMOS 30 DIAS)
+async function carregarRecentes() {
+    const pId = appAtivo ? PROVIDERS[appAtivo] : Object.values(PROVIDERS).join('|');
+    const hoje = new Date().toISOString().split('T')[0];
+    const trintaDiasAtras = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    
+    const params = `api_key=${API_KEY}&language=pt-BR&watch_region=BR&with_watch_providers=${pId}&sort_by=primary_release_date.desc&primary_release_date.gte=${trintaDiasAtras}&primary_release_date.lte=${hoje}`;
+    
+    const res = await fetch(`${BASE}/discover/movie?${params}`).then(r => r.json());
+    renderConteudo("app-filmes", "🆕 ADICIONADOS RECENTEMENTE", res.results?.slice(0, 5));
+    document.getElementById("app-series").innerHTML = ""; // Limpa séries para focar na novidade
+}
+
+// LANÇAMENTOS (PÁGINA 2)
+async function carregarNovidades(tipo) {
+    const container = document.getElementById("container-novidades");
+    container.innerHTML = "<p class='text-white text-center'>Carregando lançamentos...</p>";
+    
+    const pId = appAtivo ? PROVIDERS[appAtivo] : Object.values(PROVIDERS).join('|');
+    const params = `api_key=${API_KEY}&language=pt-BR&watch_region=BR&with_watch_providers=${pId}&sort_by=popularity.desc&release_date.gte=2026-01-01`;
+    
+    const res = await fetch(`${BASE}/discover/${tipo}?${params}`).then(r => r.json());
+    
+    container.innerHTML = "";
+    res.results.slice(0, 5).forEach(item => {
         container.innerHTML += `
             <div class="glass-card">
-                <div class="bg-gray-100 rounded-xl p-2 text-center text-[10px] font-bold mb-4 uppercase text-gray-600">Assista em Claro TV+ e Parcerias</div>
-                <h3 class="text-xl font-black text-center mb-4 uppercase">${item.title || item.name}</h3>
-                <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="mx-auto rounded-[25px] mb-6 max-w-[250px] shadow-lg">
-                <p class="text-sm text-center line-clamp-3">${item.overview || ""}</p>
+                <h3 class="text-xl font-black uppercase mb-2">${item.title || item.name}</h3>
+                <p class="text-xs font-bold text-red-600 mb-4">LANÇAMENTO 2026</p>
+                <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="poster-img shadow-2xl">
+                <p class="text-sm italic">${item.overview || "Sinopse em breve."}</p>
             </div>`;
     });
 }
 
-init(); render();
+function renderConteudo(divId, titulo, dados) {
+    const container = document.getElementById(divId);
+    container.innerHTML = `<h2 class="text-2xl font-black uppercase italic mb-8 border-l-4 border-red-600 pl-4 text-white">${titulo}</h2>`;
+    if(!dados || dados.length === 0) {
+        container.innerHTML += "<p class='text-white/50 px-4'>Nenhum conteúdo encontrado para este filtro.</p>";
+        return;
+    }
+    dados.forEach(item => {
+        container.innerHTML += `
+            <div class="glass-card">
+                <div class="bg-gray-100 rounded-xl p-2 text-center text-[10px] font-bold mb-4 uppercase text-gray-600">Disponível para sua equipe de vendas</div>
+                <h3 class="text-xl font-black text-center mb-4 uppercase">${item.title || item.name}</h3>
+                <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="poster-img shadow-lg">
+                <p class="text-sm text-center line-clamp-3 mb-4">${item.overview || "Sem sinopse disponível."}</p>
+                <div class="text-center font-black text-red-600 text-xs">REPERTÓRIO: ${Math.round(item.popularity)} pts de Popularidade</div>
+            </div>`;
+    });
+}
+
+init(); 
+render();
 </script>
 </body>
 </html>
