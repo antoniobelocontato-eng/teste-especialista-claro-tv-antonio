@@ -9,13 +9,16 @@
     <style>
         body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; overflow-x: hidden; }
         .gradient-header { background: linear-gradient(180deg, #ee1d23 0%, rgba(15,23,42,0) 100%); }
-        .glass-card { background: #fff; border-radius: 30px; padding: 25px; color: #1e293b; margin-bottom: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .card-app { background: #fff; border-radius: 20px; height: 75px; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid #e2e8f0; transition: 0.3s; padding: 12px; }
+        .glass-card { background: #fff; border-radius: 30px; padding: 25px; color: #1e293b; margin-bottom: 2rem; box-shadow: 0 10px 25px rgba(0,0,0,0.3); position: relative; }
+        .card-app { background: #fff; border-radius: 20px; height: 60px; display:flex; align-items:center; justify-content:center; cursor:pointer; border:2px solid #e2e8f0; transition: 0.3s; padding: 10px; }
         .is-active-app { border: 4px solid #ee1d23; box-shadow: 0 0 20px rgba(238, 29, 35, 0.4); transform: scale(1.05); }
         .menu-item { border-bottom: 1px solid #f1f5f9; width: 100%; text-align: left; padding: 18px 20px; font-size: 15px; font-weight: 500; color: #1e293b; display: flex; align-items: center; }
         .hidden { display: none !important; }
-        .btn-novidade { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: white; padding: 18px 30px; border-radius: 999px; font-size: 13px; font-weight: 900; text-transform: uppercase; width: 100%; transition: 0.3s; }
-        .poster-img { width: 100%; max-width: 220px; border-radius: 20px; margin: 0 auto 1.5rem; display: block; }
+        .poster-img { width: 100%; max-width: 220px; border-radius: 20px; margin: 0 auto 1.5rem; display: block; object-fit: cover; height: 330px; }
+        .btn-action { width: 100%; padding: 12px; border-radius: 15px; font-weight: 900; text-transform: uppercase; font-size: 11px; margin-top: 8px; transition: 0.3s; }
+        /* Modal Style */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
+        .modal-content { background: #fff; margin: 10% auto; padding: 20px; width: 90%; max-width: 600px; border-radius: 30px; color: #1e293b; }
     </style>
 </head>
 <body>
@@ -25,16 +28,16 @@
         <h1 class="text-3xl font-black italic uppercase mb-6 text-white tracking-tighter">CLARO TV+ <br><span class="text-white/50 text-2xl">ESPECIALISTA</span></h1>
         
         <div class="flex justify-center gap-2 flex-wrap mb-6">
-            <button onclick="toggleMenu('lista-historico')" class="px-4 py-2 rounded-full bg-white/20 text-[9px] font-black uppercase">Histórico</button>
-            <button onclick="toggleMenu('lista-generos')" class="px-4 py-2 rounded-full bg-white/20 text-[9px] font-black uppercase">Gêneros</button>
-            <button onclick="navegarPara('page-estreias')" class="px-4 py-2 rounded-full bg-yellow-400 text-black text-[9px] font-black uppercase">Lançamentos Brasil</button>
-            <button onclick="carregarRecentes()" class="px-4 py-2 rounded-full bg-blue-600 text-white text-[9px] font-black uppercase">Adicionado Recente</button>
+            <button onclick="toggleMenu('lista-historico')" class="px-4 py-2 rounded-full bg-white/20 text-[9px] font-black uppercase">📅 Histórico</button>
+            <button onclick="toggleMenu('lista-generos')" class="px-4 py-2 rounded-full bg-white/20 text-[9px] font-black uppercase">🎭 Gêneros</button>
+            <button onclick="navegarPara('page-estreias')" class="px-4 py-2 rounded-full bg-yellow-400 text-black text-[9px] font-black uppercase">Lançamentos 2026</button>
             <button onclick="resetar()" class="px-4 py-2 rounded-full bg-red-600 text-white text-[9px] font-black uppercase">Reset</button>
         </div>
 
         <div id="lista-historico" class="hidden bg-white max-w-sm mx-auto rounded-[30px] shadow-2xl absolute left-0 right-0 z-50 mt-2">
             <button onclick="setAno('2026')" class="menu-item">✓ 2026 (Atual)</button>
             <button onclick="setAno('2025')" class="menu-item">De 2025 até hoje</button>
+            <button onclick="setAno('2024')" class="menu-item">De 2024 até hoje</button>
             <button onclick="setAno('all')" class="menu-item">Todo o histórico</button>
         </div>
 
@@ -42,29 +45,26 @@
             <div id="generos-container"></div>
         </div>
 
-        <div id="streaming-grid" class="grid grid-cols-2 md:grid-cols-3 gap-4 bg-white/90 p-5 rounded-[35px] max-w-2xl mx-auto mt-6 shadow-2xl border border-white/20"></div>
+        <div id="streaming-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 bg-white/90 p-4 rounded-[35px] max-w-xl mx-auto mt-6 shadow-2xl"></div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-6 space-y-16 mt-10">
+    <main class="max-w-4xl mx-auto px-6 space-y-12 pb-20">
         <div id="app-filmes"></div>
         <div id="app-series"></div>
     </main>
 </div>
 
-<div id="page-estreias" class="hidden min-h-screen bg-[#0f172a] p-6 pt-12">
-    <div class="max-w-xl mx-auto text-center space-y-8">
-        <h2 class="text-4xl font-black italic uppercase text-yellow-400">🚀 LANÇAMENTOS NO BRASIL</h2>
-        <div class="space-y-4">
-            <button onclick="carregarNovidades('movie')" class="btn-novidade">Filmes nos Streamings</button>
-            <button onclick="carregarNovidades('tv')" class="btn-novidade">Séries nos Streamings</button>
+<div id="modal-temporadas" class="modal">
+    <div class="modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h2 id="modal-titulo" class="font-black uppercase italic text-xl">Temporadas</h2>
+            <button onclick="fecharModal()" class="text-red-600 font-bold">FECHAR X</button>
         </div>
-        <button onclick="navegarPara('page-home')" class="text-white/30 uppercase text-[11px] font-black pt-8 block mx-auto">← VOLTAR PARA A HOME</button>
-        <div id="container-novidades" class="mt-12 text-left space-y-6"></div>
+        <div id="lista-episodios" class="space-y-4"></div>
     </div>
 </div>
 
 <script>
-// CONFIGURAÇÕES BASE
 const API_KEY="a3e15f985435c14269f8f3e9bfacb207";
 const BASE="https://api.themoviedb.org/3";
 const PROVIDERS = { Netflix: 8, "HBO MAX": 1899, "Disney+": 337, "Apple TV+": 350, Globoplay: 307, "Prime Video": 119 };
@@ -80,114 +80,81 @@ const GENRES = [{id:28, name:"Ação"}, {id:35, name:"Comédia"}, {id:10749, nam
 
 let appAtivo = null, generoAtivo = null, anoAtivo = '2026';
 
-// INICIALIZAÇÃO DA INTERFACE
 function init() {
     const grid = document.getElementById("streaming-grid");
     grid.innerHTML = "";
     Object.keys(PROVIDERS).forEach(p => {
         const d = document.createElement("div");
         d.className = `card-app ${appAtivo === p ? 'is-active-app' : ''}`;
-        d.onclick = (e) => { 
-            e.stopPropagation(); 
-            appAtivo = (appAtivo === p) ? null : p; 
-            init(); 
-            render(); 
-        };
-        d.innerHTML = `<img src="${LOGOS[p]}" class="h-8 pointer-events-none">`;
+        d.onclick = () => { appAtivo = (appAtivo === p) ? null : p; init(); render(); };
+        d.innerHTML = `<img src="${LOGOS[p]}" class="h-6 pointer-events-none">`;
         grid.appendChild(d);
     });
-
-    const gCont = document.getElementById("generos-container");
-    gCont.innerHTML = GENRES.map(g => `<button onclick="setGenero(${g.id})" class="menu-item">${g.name}</button>`).join("");
+    document.getElementById("generos-container").innerHTML = GENRES.map(g => `<button onclick="setGenero(${g.id})" class="menu-item">${g.name}</button>`).join("");
 }
 
-// NAVEGAÇÃO E FILTROS
 function toggleMenu(id) { document.getElementById(id).classList.toggle('hidden'); }
-function navegarPara(id) { 
-    document.getElementById('page-home').classList.add('hidden'); 
-    document.getElementById('page-estreias').classList.add('hidden'); 
-    document.getElementById(id).classList.remove('hidden'); 
-}
 function setGenero(id) { generoAtivo = id; toggleMenu('lista-generos'); render(); }
 function setAno(ano) { anoAtivo = ano; toggleMenu('lista-historico'); render(); }
 function resetar() { location.reload(); }
 
-// BUSCA PRINCIPAL (HOME)
 async function render() {
     const pId = appAtivo ? PROVIDERS[appAtivo] : Object.values(PROVIDERS).join('|');
     let params = `api_key=${API_KEY}&language=pt-BR&watch_region=BR&with_watch_providers=${pId}&sort_by=popularity.desc`;
-    
     if(generoAtivo) params += `&with_genres=${generoAtivo}`;
     if(anoAtivo !== 'all') params += `&primary_release_date.gte=${anoAtivo}-01-01`;
 
-    try {
-        const [mRes, tRes] = await Promise.all([
-            fetch(`${BASE}/discover/movie?${params}`).then(r => r.json()),
-            fetch(`${BASE}/discover/tv?${params.replace('primary_release_date','first_air_date')}`).then(r => r.json())
-        ]);
-        
-        const tituloSufixo = appAtivo ? `NA ${appAtivo.toUpperCase()}` : "NO BRASIL";
-        renderConteudo("app-filmes", `🎬 5 FILMES POPULARES ${tituloSufixo}`, mRes.results?.slice(0, 5));
-        renderConteudo("app-series", `📺 5 SÉRIES POPULARES ${tituloSufixo}`, tRes.results?.slice(0, 5));
-    } catch (e) { console.error("Erro ao carregar dados"); }
+    const [mRes, tRes] = await Promise.all([
+        fetch(`${BASE}/discover/movie?${params}`).then(r => r.json()),
+        fetch(`${BASE}/discover/tv?${params.replace('primary_release_date','first_air_date')}`).then(r => r.json())
+    ]);
+
+    renderConteudo("app-filmes", "🎬 5 FILMES POPULARES", mRes.results?.slice(0, 5), 'movie');
+    renderConteudo("app-series", "📺 5 SÉRIES POPULARES", tRes.results?.slice(0, 5), 'tv');
 }
 
-// ADICIONADOS RECENTEMENTE (ÚLTIMOS 30 DIAS)
-async function carregarRecentes() {
-    const pId = appAtivo ? PROVIDERS[appAtivo] : Object.values(PROVIDERS).join('|');
-    const hoje = new Date().toISOString().split('T')[0];
-    const trintaDiasAtras = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    
-    const params = `api_key=${API_KEY}&language=pt-BR&watch_region=BR&with_watch_providers=${pId}&sort_by=primary_release_date.desc&primary_release_date.gte=${trintaDiasAtras}&primary_release_date.lte=${hoje}`;
-    
-    const res = await fetch(`${BASE}/discover/movie?${params}`).then(r => r.json());
-    renderConteudo("app-filmes", "🆕 ADICIONADOS RECENTEMENTE", res.results?.slice(0, 5));
-    document.getElementById("app-series").innerHTML = ""; // Limpa séries para focar na novidade
-}
-
-// LANÇAMENTOS (PÁGINA 2)
-async function carregarNovidades(tipo) {
-    const container = document.getElementById("container-novidades");
-    container.innerHTML = "<p class='text-white text-center'>Carregando lançamentos...</p>";
-    
-    const pId = appAtivo ? PROVIDERS[appAtivo] : Object.values(PROVIDERS).join('|');
-    const params = `api_key=${API_KEY}&language=pt-BR&watch_region=BR&with_watch_providers=${pId}&sort_by=popularity.desc&release_date.gte=2026-01-01`;
-    
-    const res = await fetch(`${BASE}/discover/${tipo}?${params}`).then(r => r.json());
-    
-    container.innerHTML = "";
-    res.results.slice(0, 5).forEach(item => {
-        container.innerHTML += `
-            <div class="glass-card">
-                <h3 class="text-xl font-black uppercase mb-2">${item.title || item.name}</h3>
-                <p class="text-xs font-bold text-red-600 mb-4">LANÇAMENTO 2026</p>
-                <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="poster-img shadow-2xl">
-                <p class="text-sm italic">${item.overview || "Sinopse em breve."}</p>
-            </div>`;
-    });
-}
-
-function renderConteudo(divId, titulo, dados) {
+async function renderConteudo(divId, titulo, dados, tipo) {
     const container = document.getElementById(divId);
     container.innerHTML = `<h2 class="text-2xl font-black uppercase italic mb-8 border-l-4 border-red-600 pl-4 text-white">${titulo}</h2>`;
-    if(!dados || dados.length === 0) {
-        container.innerHTML += "<p class='text-white/50 px-4'>Nenhum conteúdo encontrado para este filtro.</p>";
-        return;
-    }
-    dados.forEach(item => {
+    
+    for (const item of dados) {
+        const providers = await fetch(`${BASE}/${tipo}/${item.id}/watch/providers?api_key=${API_KEY}`).then(r => r.json());
+        const ondeAssistir = providers.results?.BR?.flatrate?.map(p => p.provider_name).join(" | ") || "Verificar disponibilidade";
+        
+        const videos = await fetch(`${BASE}/${tipo}/${item.id}/videos?api_key=${API_KEY}&language=pt-BR`).then(r => r.json());
+        const trailer = videos.results.find(v => v.type === "Trailer")?.key;
+
         container.innerHTML += `
             <div class="glass-card">
-                <div class="bg-gray-100 rounded-xl p-2 text-center text-[10px] font-bold mb-4 uppercase text-gray-600">Disponível para sua equipe de vendas</div>
-                <h3 class="text-xl font-black text-center mb-4 uppercase">${item.title || item.name}</h3>
-                <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="poster-img shadow-lg">
-                <p class="text-sm text-center line-clamp-3 mb-4">${item.overview || "Sem sinopse disponível."}</p>
-                <div class="text-center font-black text-red-600 text-xs">REPERTÓRIO: ${Math.round(item.popularity)} pts de Popularidade</div>
+                <div class="bg-red-50 rounded-xl p-2 text-center text-[10px] font-black mb-4 uppercase text-red-600 border border-red-100">${ondeAssistir}</div>
+                <h3 class="text-xl font-black text-center mb-4 uppercase leading-tight">${item.title || item.name}</h3>
+                <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="poster-img shadow-2xl border-4 border-white">
+                <p class="text-sm text-center line-clamp-3 mb-6 px-2 text-gray-500 italic">"${item.overview || "Sem sinopse disponível."}"</p>
+                
+                <div class="flex gap-2">
+                    ${trailer ? `<button onclick="window.open('https://youtube.com/watch?v=${trailer}')" class="btn-action bg-red-600 text-white">Ver Trailer</button>` : ''}
+                    ${tipo === 'tv' ? `<button onclick="abrirTemporadas(${item.id}, '${item.name}')" class="btn-action bg-blue-600 text-white">Temporadas</button>` : ''}
+                </div>
+                <div class="mt-4 text-center font-black text-gray-400 text-[10px] uppercase tracking-widest">Popularidade: ${Math.round(item.vote_average * 10)}% de aprovação</div>
             </div>`;
-    });
+    }
 }
 
-init(); 
-render();
+async function abrirTemporadas(id, nome) {
+    const res = await fetch(`${BASE}/tv/${id}?api_key=${API_KEY}&language=pt-BR`).then(r => r.json());
+    document.getElementById("modal-titulo").innerText = nome;
+    document.getElementById("lista-episodios").innerHTML = res.seasons.map(s => `
+        <details class="bg-gray-100 p-4 rounded-2xl">
+            <summary class="font-black uppercase text-sm cursor-pointer">${s.name} (${s.episode_count} Eps)</summary>
+            <p class="text-xs mt-2 text-gray-600">${s.overview || "Sinopse da temporada não disponível."}</p>
+        </details>
+    `).join("");
+    document.getElementById("modal-temporadas").style.display = "block";
+}
+
+function fecharModal() { document.getElementById("modal-temporadas").style.display = "none"; }
+
+init(); render();
 </script>
 </body>
 </html>
