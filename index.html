@@ -13,15 +13,13 @@
         .search-row { display: flex; gap: 8px; width: 100%; }
         .search-input { flex-grow: 1; padding: 12px 18px; border-radius: 50px; border: 1px solid #444; background: rgba(0,0,0,0.5); color: white; outline: none; font-size: 16px; }
         .btn-search { background: var(--claro-red); border: none; border-radius: 50px; padding: 0 20px; color: white; font-weight: bold; cursor: pointer; }
-        
-        /* BOTÃO VOLTAR REESTILIZADO */
-        .btn-reset { background: #444; color: white; border: none; padding: 12px 25px; border-radius: 50px; font-size: 14px; cursor: pointer; display: none; align-self: center; font-weight: bold; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn-reset { background: #444; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-size: 12px; cursor: pointer; display: none; align-self: center; font-weight: bold; margin-top: 10px; }
 
         /* Navegação */
         .header-nav { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; align-items: center; }
         .btn-coming-soon { background: var(--accent-gold); color: black; padding: 12px 20px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; max-width: 300px; text-transform: uppercase; }
 
-        /* Dropdown Estilizado */
+        /* Dropdown Estilizado conforme print */
         .dropdown { position: relative; width: 100%; max-width: 300px; }
         .dropbtn { background: #222; color: white; padding: 12px; border: 1px solid var(--claro-red); border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: center; }
         .dropdown-content { display: none; position: absolute; background: #222; width: 100%; z-index: 1000; border-radius: 8px; border: 1px solid #444; margin-top: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
@@ -34,11 +32,16 @@
         .btn-filter-logo.active { border-color: var(--claro-red); box-shadow: 0 0 15px var(--claro-red); background: rgba(238, 29, 35, 0.1); }
         .btn-filter-logo img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
-        /* Grid de Exibição */
+        /* Grid */
         .grid-layout { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 40px; }
         .card { background: var(--surface); border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #333; position: relative; }
-        .streaming-frame { background: #000; padding: 6px; display: flex; justify-content: center; gap: 6px; border-bottom: 2px solid var(--claro-red); min-height: 30px; }
+        
+        /* Moldura de Streaming Superior */
+        .streaming-frame { background: #000; padding: 6px; display: flex; justify-content: center; gap: 6px; border-bottom: 2px solid var(--claro-red); min-height: 30px; align-items: center; }
         .mini-logo { width: 22px; height: 22px; border-radius: 3px; object-fit: contain; }
+        
+        .release-badge { position: absolute; top: 55px; right: 10px; background: var(--claro-red); padding: 5px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+
         .card-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #000; }
         .card-content { padding: 12px; flex-grow: 1; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
         .card-title { font-size: 0.9rem; margin-bottom: 10px; height: 38px; overflow: hidden; font-weight: bold; color: #fff; line-height: 1.2; }
@@ -138,22 +141,27 @@
             carregarDados('movie', 'grid-filmes', config); carregarDados('tv', 'grid-series', config);
         }
 
-        async function carregarDados(tipo, containerId, extra) {
+        async function carregarDados(tipo, containerId, extra, isVemAi = false) {
             const res = await fetch(`${BASE_URL}/discover/${tipo}?api_key=${API_KEY}&language=pt-BR&page=1${extra}`);
             const data = await res.json();
-            renderCards(data.results.slice(0, 5), containerId, tipo);
+            renderCards(data.results.slice(0, 5), containerId, tipo, isVemAi);
         }
 
-        async function renderCards(lista, containerId, tipo) {
+        async function renderCards(lista, containerId, tipo, isVemAi) {
             const container = document.getElementById(containerId);
-            container.innerHTML = lista.length ? "" : "<p style='padding:15px'>Nenhum conteúdo encontrado para esta seleção.</p>";
+            container.innerHTML = lista.length ? "" : "<p style='padding:15px'>Nenhum conteúdo encontrado.</p>";
             for (const item of lista) {
+                // Busca de provedores (streaming) ativada mesmo no "Vem Aí"
                 const provRes = await fetch(`${BASE_URL}/${tipo}/${item.id}/watch/providers?api_key=${API_KEY}`).then(r => r.json());
-                const br = (provRes.results?.BR?.flatrate || []).slice(0, 3).map(p => `<img src="https://image.tmdb.org/t/p/w500${p.logo_path}" class="mini-logo">`).join('');
+                const br = (provRes.results?.BR?.flatrate || provRes.results?.BR?.ads || []).slice(0, 3).map(p => `<img src="https://image.tmdb.org/t/p/w500${p.logo_path}" class="mini-logo">`).join('');
                 
+                const dataRaw = item.release_date || item.first_air_date || "";
+                const dataBR = dataRaw ? dataRaw.split('-').reverse().join('/') : "--/--/--";
+
                 container.innerHTML += `
                     <div class="card">
-                        <div class="streaming-frame">${br || '<span style="font-size:10px">Ver no App</span>'}</div>
+                        <div class="streaming-frame">${br || '<span style="font-size:10px; color:#aaa">A confirmar</span>'}</div>
+                        ${isVemAi ? `<div class="release-badge">ESTREIA: ${dataBR}</div>` : ''}
                         <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="card-poster" onerror="this.src='https://via.placeholder.com/200x300?text=CineClaro'">
                         <div class="card-content">
                             <h3 class="card-title">${item.title || item.name}</h3>
@@ -175,8 +183,8 @@
             document.getElementById('t1').innerText = "🔍 Filmes Encontrados";
             document.getElementById('t2').innerText = "🔍 Séries Encontradas";
             
-            renderCards(resM.results.slice(0, 5), 'grid-filmes', 'movie');
-            renderCards(resT.results.slice(0, 5), 'grid-series', 'tv');
+            renderCards(resM.results.slice(0, 5), 'grid-filmes', 'movie', false);
+            renderCards(resT.results.slice(0, 5), 'grid-series', 'tv', false);
         }
 
         async function abrirTemporadas(id) {
@@ -202,8 +210,9 @@
         async function buscarVemAi() {
             document.getElementById('btn-voltar').style.display = 'block';
             const h = new Date().toISOString().split('T')[0];
+            // Filtro focado em datas futuras
             const f = `&primary_release_date.gte=${h}&first_air_date.gte=${h}&sort_by=primary_release_date.asc`;
-            carregarDados('movie', 'grid-filmes', f); carregarDados('tv', 'grid-series', f);
+            carregarDados('movie', 'grid-filmes', f, true); carregarDados('tv', 'grid-series', f, true);
         }
 
         init();
