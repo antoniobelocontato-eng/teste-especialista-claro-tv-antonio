@@ -3,190 +3,331 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Vendas - Streaming Brasil</title>
+    <title>Portal de Conteúdo - Consultoria de Vendas</title>
     <style>
-        :root { --claro-red: #ee1d23; --dark-bg: #141414; --card-bg: #1f1f1f; }
-        body { background: var(--dark-bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-        
-        /* Navegação */
-        .header-nav { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; align-items: center; }
+        :root {
+            --claro-red: #ee1d23;
+            --claro-grey: #f4f4f4;
+            --claro-text: #333;
+            --white: #ffffff;
+            --border-color: #ddd;
+        }
+
+        body {
+            background-color: var(--claro-grey);
+            color: var(--claro-text);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--claro-red);
+            color: var(--white);
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* Navegação e Filtros */
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 20px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
         .dropdown { position: relative; display: inline-block; }
-        .dropbtn { background: #333; color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .dropdown-content { display: none; position: absolute; background: #333; min-width: 160px; z-index: 10; border-radius: 5px; }
-        .dropdown-content a { color: white; padding: 12px; text-decoration: none; display: block; }
-        .dropdown-content a:hover { background: var(--claro-red); }
+        .dropbtn, .btn-filter {
+            background: var(--white);
+            color: var(--claro-red);
+            border: 2px solid var(--claro-red);
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .dropbtn:hover, .btn-filter:hover {
+            background: var(--claro-red);
+            color: var(--white);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: var(--white);
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            z-index: 101;
+        }
+
+        .dropdown-content a {
+            color: var(--claro-text);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .dropdown-content a:hover { background: #eee; }
         .dropdown:hover .dropdown-content { display: block; }
 
-        .streaming-filters button { background: #222; color: white; border: 1px solid #444; padding: 10px 15px; cursor: pointer; border-radius: 5px; }
-        .streaming-filters button:hover { background: var(--claro-red); border-color: var(--claro-red); }
+        /* Grid de Conteúdo */
+        .section-title { padding: 20px 20px 0; color: var(--claro-red); margin-bottom: -10px; }
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
 
-        /* Grid e Cards */
-        .grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        .card { background: var(--card-bg); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #333; }
-        .card-streamings { background: #000; color: #ffd700; padding: 10px; text-align: center; font-size: 0.75rem; font-weight: bold; }
-        .card-title { padding: 10px; font-size: 1.1rem; text-align: center; margin: 0; min-height: 50px; }
-        .card-poster { width: 100%; height: 380px; object-fit: cover; }
+        /* Card Blindado */
+        .card {
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s;
+        }
+
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+
+        .card-streamings {
+            background: #f9f9f9;
+            color: #d00000;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-title {
+            padding: 15px;
+            font-size: 1rem;
+            color: var(--claro-red);
+            font-weight: bold;
+            margin: 0;
+            min-height: 40px;
+        }
+
+        .card-poster { width: 100%; height: 350px; object-fit: cover; }
+
         .card-content { padding: 15px; flex-grow: 1; }
-        .card-synopsis { font-size: 0.85rem; color: #bbb; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        .card-footer { padding: 15px; background: #111; display: flex; flex-direction: column; gap: 8px; }
-        
-        .btn-yt { background: #ff0000; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .btn-temp { background: #007bff; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .pop-note { font-size: 0.9rem; color: #4caf50; font-weight: bold; text-align: right; }
+        .card-synopsis { font-size: 0.85rem; color: #666; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* Modal Temporadas */
-        #modal-temporadas { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); overflow-y: auto; }
-        .modal-content { background: #222; margin: 5% auto; padding: 25px; width: 90%; max-width: 800px; border-radius: 10px; }
-        .temp-item { margin-bottom: 10px; border: 1px solid #444; }
-        .temp-header { width: 100%; background: #333; color: white; padding: 15px; text-align: left; border: none; cursor: pointer; font-size: 1rem; }
-        .ep-list { padding: 15px; background: #1a1a1a; display: none; }
-        .ep-item { margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .ep-item h4 { color: #ffd700; margin: 0 0 5px 0; }
-        .ep-item p { font-size: 0.85rem; color: #ccc; margin: 0; }
-        .close-modal { float: right; font-size: 2rem; cursor: pointer; }
+        .card-footer {
+            padding: 15px;
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-action {
+            border-radius: 20px;
+            border: none;
+            padding: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-yt { background: #333; color: white; }
+        .btn-temp { background: var(--claro-red); color: white; }
+
+        /* Modal de Temporadas */
+        #modal-temporadas {
+            display: none;
+            position: fixed;
+            z-index: 200;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+        }
+
+        .modal-content {
+            background: var(--white);
+            margin: 5% auto;
+            padding: 25px;
+            width: 85%;
+            max-width: 700px;
+            border-radius: 12px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border-top: 10px solid var(--claro-red);
+        }
+
+        .temp-block { margin-bottom: 8px; }
+        .temp-btn {
+            width: 100%; text-align: left; padding: 12px; background: #eee;
+            border: none; cursor: pointer; font-weight: bold; border-radius: 5px;
+        }
+
+        .ep-list { padding: 10px; background: #fafafa; border-left: 3px solid var(--claro-red); display: none; }
+        .ep-item { margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .ep-item h4 { margin: 0 0 5px; font-size: 0.9rem; color: var(--claro-red); }
+        .ep-item p { margin: 0; font-size: 0.8rem; color: #666; }
     </style>
 </head>
 <body>
 
-    <nav class="header-nav">
-        <div class="dropdown">
-            <button class="dropbtn">📅 Histórico</button>
-            <div class="dropdown-content">
-                <a href="#" onclick="buscarComFiltro('2025-01-01')">2025 até hoje</a>
-                <a href="#" onclick="buscarComFiltro('2024-01-01')">2024 até hoje</a>
-                <a href="#" onclick="buscarComFiltro('')">Todo o Histórico</a>
-            </div>
-        </div>
-        <div class="streaming-filters">
-            <button onclick="filtrarStreaming(8)">Netflix</button>
-            <button onclick="filtrarStreaming(337)">Disney+</button>
-            <button onclick="filtrarStreaming(384)">HBO Max</button>
-            <button onclick="filtrarStreaming(119)">Prime Video</button>
-            <button onclick="filtrarStreaming(350)">Apple TV+</button>
-            <button onclick="filtrarStreaming(307)">Globoplay</button>
-        </div>
-    </nav>
+<header>Consultoria de Conteúdo Streaming</header>
 
-    <h2 id="view-title">🔥 Populares no Brasil</h2>
-    <div id="grid-filmes" class="grid-layout"></div>
-    <br><hr><br>
-    <h2>📺 Séries Populares</h2>
-    <div id="grid-series" class="grid-layout"></div>
-
-    <div id="modal-temporadas">
-        <div class="modal-content">
-            <span class="close-modal" onclick="fecharModal()">&times;</span>
-            <div id="lista-detalhada"></div>
+<nav class="nav-container">
+    <div class="dropdown">
+        <button class="dropbtn">📅 HISTÓRICO</button>
+        <div class="dropdown-content">
+            <a href="#" onclick="buscarComFiltro('2025-01-01')">2025 até hoje</a>
+            <a href="#" onclick="buscarComFiltro('2024-01-01')">2024 até hoje</a>
+            <a href="#" onclick="buscarComFiltro('')">Todo o Histórico</a>
         </div>
     </div>
+    <div class="streaming-filters">
+        <button class="btn-filter" onclick="filtrarStreaming(8)">Netflix</button>
+        <button class="btn-filter" onclick="filtrarStreaming(337)">Disney+</button>
+        <button class="btn-filter" onclick="filtrarStreaming(384)">HBO Max</button>
+        <button class="btn-filter" onclick="filtrarStreaming(119)">Prime Video</button>
+        <button class="btn-filter" onclick="filtrarStreaming(350)">Apple TV+</button>
+        <button class="btn-filter" onclick="filtrarStreaming(307)">Globoplay</button>
+    </div>
+</nav>
 
-    <script>
-        const API_KEY = "a3e15f985435c14269f8f3e9bfacb207";
-        const BASE_URL = "https://api.themoviedb.org/3";
+<h2 class="section-title">🔥 Filmes Populares no Brasil</h2>
+<div id="grid-movies" class="grid-layout"></div>
 
-        async function init() {
-            await carregarDados('movie', 'grid-filmes');
-            await carregarDados('tv', 'grid-series');
-        }
+<h2 class="section-title">📺 Séries Populares no Brasil</h2>
+<div id="grid-tv" class="grid-layout"></div>
 
-        async function carregarDados(tipo, containerId, extraParams = '') {
-            const url = `${BASE_URL}/discover/${tipo}?api_key=${API_KEY}&language=pt-BR&sort_by=popularity.desc&watch_region=BR&page=1${extraParams}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            renderCards(data.results.slice(0, 5), containerId, tipo);
-        }
+<div id="modal-temporadas">
+    <div class="modal-content">
+        <span style="float:right; cursor:pointer; font-weight:bold;" onclick="fecharModal()">FECHAR [X]</span>
+        <div id="detalhes-serie"></div>
+    </div>
+</div>
 
-        async function renderCards(lista, containerId, tipo) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = "";
-            for (const item of lista) {
-                const providers = await getProviders(tipo, item.id);
-                const trailer = await getTrailer(tipo, item.id);
-                
-                container.innerHTML += `
-                    <div class="card">
-                        <div class="card-streamings">${providers}</div>
-                        <h3 class="card-title">${item.title || item.name}</h3>
-                        <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="card-poster">
-                        <div class="card-content">
-                            <p class="card-synopsis">${item.overview || "Sem sinopse."}</p>
-                        </div>
-                        <div class="card-footer">
-                            <div class="pop-note">Nota: ${item.vote_average.toFixed(1)}</div>
-                            <button class="btn-yt" onclick="window.open('${trailer}')">Trailer YouTube</button>
-                            ${tipo === 'tv' ? `<button class="btn-temp" onclick="abrirTemporadas(${item.id})">Temporadas</button>` : ''}
-                        </div>
-                    </div>
-                `;
-            }
-        }
+<script>
+    const API_KEY = "a3e15f985435c14269f8f3e9bfacb207";
+    const BASE_URL = "https://api.themoviedb.org/3";
 
-        async function getProviders(tipo, id) {
-            const res = await fetch(`${BASE_URL}/${tipo}/${id}/watch/providers?api_key=${API_KEY}`);
-            const data = await res.json();
-            const br = data.results?.BR?.flatrate || [];
-            const nomes = br.map(p => p.provider_name).slice(0, 3);
-            return nomes.length > 0 ? nomes.join(" | ") : "Consultar Disponibilidade";
-        }
+    async function carregarDashboard() {
+        await fetchDados('movie', 'grid-movies');
+        await fetchDados('tv', 'grid-tv');
+    }
 
-        async function getTrailer(tipo, id) {
-            const res = await fetch(`${BASE_URL}/${tipo}/${id}/videos?api_key=${API_KEY}&language=pt-BR`);
-            const data = await res.json();
-            const trail = data.results.find(v => v.type === "Trailer") || data.results[0];
-            return trail ? `https://www.youtube.com/watch?v=${trail.key}` : "#";
-        }
+    async function fetchDados(tipo, containerId, filtro = '') {
+        const url = `${BASE_URL}/discover/${tipo}?api_key=${API_KEY}&language=pt-BR&sort_by=popularity.desc&watch_region=BR&page=1${filtro}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        renderizar(data.results.slice(0, 5), containerId, tipo);
+    }
 
-        // --- SISTEMA DE TEMPORADAS E EPISÓDIOS ---
-        async function abrirTemporadas(id) {
-            const res = await fetch(`${BASE_URL}/tv/${id}?api_key=${API_KEY}&language=pt-BR`);
-            const serie = await res.json();
-            let html = `<h2>${serie.name}</h2>`;
+    async function renderizar(lista, containerId, tipo) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = "";
+
+        for (const item of lista) {
+            const streamings = await getStreamings(tipo, item.id);
+            const trailerUrl = await getTrailer(tipo, item.id);
             
-            for (const t of serie.seasons) {
-                if (t.season_number === 0) continue;
-                html += `
-                    <div class="temp-item">
-                        <button class="temp-header" onclick="toggleEp(${id}, ${t.season_number})">
-                            ${t.name} (${t.episode_count} Eps)
-                        </button>
-                        <div id="eps-cont-${t.season_number}" class="ep-list"></div>
+            container.innerHTML += `
+                <div class="card">
+                    <div class="card-streamings">${streamings}</div>
+                    <h3 class="card-title">${item.title || item.name}</h3>
+                    <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="card-poster">
+                    <div class="card-content">
+                        <p class="card-synopsis">${item.overview || "Sinopse não disponível."}</p>
                     </div>
-                `;
-            }
-            document.getElementById('lista-detalhada').innerHTML = html;
-            document.getElementById('modal-temporadas').style.display = "block";
-        }
-
-        async function toggleEp(id, num) {
-            const cont = document.getElementById(`eps-cont-${num}`);
-            if (cont.style.display === "block") { cont.style.display = "none"; return; }
-            
-            const res = await fetch(`${BASE_URL}/tv/${id}/season/${num}?api_key=${API_KEY}&language=pt-BR`);
-            const data = await res.json();
-            cont.innerHTML = data.episodes.map(e => `
-                <div class="ep-item">
-                    <h4>Ep ${e.episode_number}: ${e.name}</h4>
-                    <p>${e.overview || "Sem descrição."}</p>
+                    <div class="card-footer">
+                        <span style="font-size:0.8rem; font-weight:bold;">Pop: ⭐ ${item.vote_average.toFixed(1)}</span>
+                        <a href="${trailerUrl}" target="_blank" class="btn-action btn-yt">Trailer YouTube</a>
+                        ${tipo === 'tv' ? `<button class="btn-action btn-temp" onclick="verTemporadas(${item.id})">Ver Temporadas</button>` : ''}
+                    </div>
                 </div>
-            `).join('');
-            cont.style.display = "block";
+            `;
         }
+    }
 
-        function buscarComFiltro(data) {
-            const f = data ? `&primary_release_date.gte=${data}&first_air_date.gte=${data}` : '';
-            carregarDados('movie', 'grid-filmes', f);
-            carregarDados('tv', 'grid-series', f);
-        }
+    async function getStreamings(tipo, id) {
+        const res = await fetch(`${BASE_URL}/${tipo}/${id}/watch/providers?api_key=${API_KEY}`);
+        const data = await res.json();
+        const providers = data.results?.BR?.flatrate || [];
+        return providers.length > 0 ? providers.map(p => p.provider_name).join(" | ") : "Lançamento / Consultar";
+    }
 
-        function filtrarStreaming(pid) {
-            const f = `&with_watch_providers=${pid}&watch_region=BR`;
-            carregarDados('movie', 'grid-filmes', f);
-            carregarDados('tv', 'grid-series', f);
-        }
+    async function getTrailer(tipo, id) {
+        const res = await fetch(`${BASE_URL}/${tipo}/${id}/videos?api_key=${API_KEY}&language=pt-BR`);
+        const data = await res.json();
+        const trailer = data.results.find(v => v.type === "Trailer");
+        return trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : "https://www.youtube.com";
+    }
 
-        function fecharModal() { document.getElementById('modal-temporadas').style.display = "none"; }
+    // --- LÓGICA DE TEMPORADAS ---
+    async function verTemporadas(id) {
+        const res = await fetch(`${BASE_URL}/tv/${id}?api_key=${API_KEY}&language=pt-BR`);
+        const serie = await res.json();
+        let html = `<h3>${serie.name}</h3>`;
         
-        init();
-    </script>
+        serie.seasons.forEach(s => {
+            if(s.season_number > 0) {
+                html += `
+                    <div class="temp-block">
+                        <button class="temp-btn" onclick="toggleEps(${id}, ${s.season_number})">${s.name} (${s.episode_count} Eps)</button>
+                        <div id="eps-${s.season_number}" class="ep-list">Carregando...</div>
+                    </div>
+                `;
+            }
+        });
+        document.getElementById('detalhes-serie').innerHTML = html;
+        document.getElementById('modal-temporadas').style.display = 'block';
+    }
+
+    async function toggleEps(id, num) {
+        const div = document.getElementById(`eps-${num}`);
+        if(div.style.display === 'block') { div.style.display = 'none'; return; }
+        
+        const res = await fetch(`${BASE_URL}/tv/${id}/season/${num}?api_key=${API_KEY}&language=pt-BR`);
+        const data = await res.json();
+        div.innerHTML = data.episodes.map(e => `
+            <div class="ep-item">
+                <h4>Ep ${e.episode_number}: ${e.name}</h4>
+                <p>${e.overview || "Sem sinopse disponível."}</p>
+            </div>
+        `).join('');
+        div.style.display = 'block';
+    }
+
+    function fecharModal() { document.getElementById('modal-temporadas').style.display = 'none'; }
+
+    function buscarComFiltro(data) {
+        const f = data ? `&primary_release_date.gte=${data}&first_air_date.gte=${data}` : '';
+        fetchDados('movie', 'grid-movies', f);
+        fetchDados('tv', 'grid-tv', f);
+    }
+
+    function filtrarStreaming(pid) {
+        const f = `&with_watch_providers=${pid}&watch_region=BR`;
+        fetchDados('movie', 'grid-movies', f);
+        fetchDados('tv', 'grid-tv', f);
+    }
+
+    carregarDashboard();
+</script>
+
 </body>
 </html>
