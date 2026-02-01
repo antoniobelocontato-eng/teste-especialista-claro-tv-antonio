@@ -13,7 +13,7 @@
         .search-row { display: flex; gap: 8px; width: 100%; }
         .search-input { flex-grow: 1; padding: 12px 18px; border-radius: 50px; border: 1px solid #444; background: rgba(0,0,0,0.5); color: white; outline: none; font-size: 16px; }
         .btn-search { background: var(--claro-red); border: none; border-radius: 50px; padding: 0 20px; color: white; font-weight: bold; cursor: pointer; }
-        .btn-reset { background: #444; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-size: 12px; cursor: pointer; display: none; align-self: center; font-weight: bold; }
+        .btn-reset { background: #444; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-size: 12px; cursor: pointer; display: none; align-self: center; font-weight: bold; margin-top: 5px; }
 
         /* Navegação */
         .header-nav { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; align-items: center; }
@@ -23,7 +23,7 @@
         .dropdown { position: relative; width: 100%; max-width: 300px; }
         .dropbtn { background: #222; color: white; padding: 12px; border: 1px solid var(--claro-red); border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: center; }
         .dropdown-content { display: none; position: absolute; background: #222; width: 100%; z-index: 1000; border-radius: 8px; border: 1px solid #444; margin-top: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-        .dropdown-content a { color: white; padding: 15px; text-decoration: none; display: block; border-bottom: 1px solid #333; }
+        .dropdown-content a { color: white; padding: 15px; text-decoration: none; display: block; border-bottom: 1px solid #333; cursor: pointer; }
         .dropdown-content.show { display: block; }
 
         /* Streaming Filtros */
@@ -85,9 +85,9 @@
     </nav>
 
     <main>
-        <h2 id="t1" style="border-left: 4px solid var(--claro-red); padding-left: 10px;">🎬 Filmes</h2>
+        <h2 id="t1" style="border-left: 4px solid var(--claro-red); padding-left: 10px;">🎬 Filmes Populares</h2>
         <div id="grid-filmes" class="grid-layout"></div>
-        <h2 id="t2" style="border-left: 4px solid var(--claro-red); padding-left: 10px;">🍿 Séries</h2>
+        <h2 id="t2" style="border-left: 4px solid var(--claro-red); padding-left: 10px;">🍿 Séries Populares</h2>
         <div id="grid-series" class="grid-layout"></div>
     </main>
 
@@ -129,7 +129,6 @@
         }
 
         async function aplicarFiltros() {
-            // Ajuste para HBO Max / Max (ID 1899 é o provedor atualizado da Max)
             const config = "&with_watch_monetization_types=flatrate&watch_region=BR" + periodoAtual + streamingAtual;
             carregarDados('movie', 'grid-filmes', config); carregarDados('tv', 'grid-series', config);
         }
@@ -153,7 +152,7 @@
                         <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="card-poster" onerror="this.src='https://via.placeholder.com/200x300?text=CineClaro'">
                         <div class="card-content">
                             <h3 class="card-title">${item.title || item.name}</h3>
-                            <button class="btn-yt" onclick="window.open('https://www.youtube.com/results?search_query=${item.title || item.name}+trailer')">Assistir</button>
+                            <button class="btn-yt" onclick="window.open('https://www.youtube.com/results?search_query=${item.title || item.name}+trailer+oficial')">Ver Trailer</button>
                             ${tipo === 'tv' ? `<button class="btn-temp" onclick="abrirTemporadas(${item.id})">Temporadas</button>` : ''}
                         </div>
                     </div>`;
@@ -167,6 +166,10 @@
             const url = (t) => `${BASE_URL}/search/${t}?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(q)}&region=BR`;
             const resM = await fetch(url('movie')).then(r => r.json());
             const resT = await fetch(url('tv')).then(r => r.json());
+            
+            document.getElementById('t1').innerText = "🔍 Filmes Encontrados";
+            document.getElementById('t2').innerText = "🔍 Séries Encontradas";
+            
             renderCards(resM.results.slice(0, 5), 'grid-filmes', 'movie');
             renderCards(resT.results.slice(0, 5), 'grid-series', 'tv');
         }
