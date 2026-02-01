@@ -19,7 +19,7 @@
         .header-nav { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; align-items: center; }
         .btn-coming-soon { background: var(--accent-gold); color: black; padding: 12px 20px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; max-width: 300px; text-transform: uppercase; }
 
-        /* Dropdown Estilizado conforme print */
+        /* Dropdown Estilizado */
         .dropdown { position: relative; width: 100%; max-width: 300px; }
         .dropbtn { background: #222; color: white; padding: 12px; border: 1px solid var(--claro-red); border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: center; }
         .dropdown-content { display: none; position: absolute; background: #222; width: 100%; z-index: 1000; border-radius: 8px; border: 1px solid #444; margin-top: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
@@ -36,7 +36,6 @@
         .grid-layout { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 40px; }
         .card { background: var(--surface); border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #333; position: relative; }
         
-        /* Moldura de Streaming Superior */
         .streaming-frame { background: #000; padding: 6px; display: flex; justify-content: center; gap: 6px; border-bottom: 2px solid var(--claro-red); min-height: 30px; align-items: center; }
         .mini-logo { width: 22px; height: 22px; border-radius: 3px; object-fit: contain; }
         
@@ -82,9 +81,12 @@
             <button class="btn-filter-logo" onclick="setStreaming(8, this)" title="Netflix"><img src="https://cdn.ome.lt/3ElaNADWztHsI40J6dHqpTP_Vt8=/987x0/smart/filters:format(webp)/uploads/conteudo/fotos/BrandAssets_Logos_01-Wordmark.png"></button>
             <button class="btn-filter-logo" onclick="setStreaming(337, this)" title="Disney+"><img src="https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/C67C35CF0EB8C168A861956E743C6CCD26BFB17B93227234F3CD1A81BB728F35/compose?format=webp&width=270"></button>
             <button class="btn-filter-logo" onclick="setStreaming(1899, this)" title="Max (HBO)"><img src="https://naoseinada.com.br/wp-content/uploads/2025/07/hbo-max-logo.jpg?w=1024"></button>
-            <button class="btn-filter-logo" onclick="setStreaming(119, this)" title="Prime Video"><img src="https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg"></button>
+            
+            <button class="btn-filter-logo" onclick="setStreaming(119, this)" title="Prime Video"><img src="https://www.vhv.rs/dpng/d/433-4338775_amazon-prime-instant-video-logo-png-amazon-prime.png"></button>
+            
             <button class="btn-filter-logo" onclick="setStreaming(350, this)" title="Apple TV+"><img src="https://s2-techtudo.glbimg.com/QxSaJy6M0fZ3mtDymh95iCmPfng=/1200x0/filters:format(jpeg)/https://i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2025/J/8/Q4naXUQWA7x46uxCf8UA/apple-tv-e7aqjl2rqzau-og.png"></button>
-            <button class="btn-filter-logo" onclick="setStreaming(307, this)" title="Globoplay"><img src="https://s2-oglobo.glbimg.com/XTmWGb2-aapiORbUGl59c26FQac=/0x0:1500x844/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_da025474c0c44edd99332dddb09cabe8/internal_photos/bs/2024/k/Q/yVfaA6QpG7ufDRnWf7IA/whatsapp-image-2024-06-07-at-18.07.24.jpeg"></button>
+            
+            <button class="btn-filter-logo" onclick="setStreaming(307, this)" title="Globoplay"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcS9rQBeH8NwfSwv9ZZmTtdC-obH3oUW3ydA&s"></button>
         </div>
     </nav>
 
@@ -151,7 +153,6 @@
             const container = document.getElementById(containerId);
             container.innerHTML = lista.length ? "" : "<p style='padding:15px'>Nenhum conteúdo encontrado.</p>";
             for (const item of lista) {
-                // Busca de provedores (streaming) ativada mesmo no "Vem Aí"
                 const provRes = await fetch(`${BASE_URL}/${tipo}/${item.id}/watch/providers?api_key=${API_KEY}`).then(r => r.json());
                 const br = (provRes.results?.BR?.flatrate || provRes.results?.BR?.ads || []).slice(0, 3).map(p => `<img src="https://image.tmdb.org/t/p/w500${p.logo_path}" class="mini-logo">`).join('');
                 
@@ -210,7 +211,6 @@
         async function buscarVemAi() {
             document.getElementById('btn-voltar').style.display = 'block';
             const h = new Date().toISOString().split('T')[0];
-            // Filtro focado em datas futuras
             const f = `&primary_release_date.gte=${h}&first_air_date.gte=${h}&sort_by=primary_release_date.asc`;
             carregarDados('movie', 'grid-filmes', f, true); carregarDados('tv', 'grid-series', f, true);
         }
