@@ -3,22 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CineClaro Premium - 2026</title>
+    <title>CineClaro - Vendas 2026</title>
     <style>
         :root { --claro-red: #ee1d23; --deep-black: #0a0a0a; --surface: #1a1a1a; --accent-gold: #ffd700; }
         body { background: radial-gradient(circle at top, #3a0000 0%, #0a0a0a 100%) fixed; color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; -webkit-tap-highlight-color: transparent; }
         
-        /* Barra de Busca */
-        .search-container { max-width: 800px; margin: 0 auto 20px; display: flex; gap: 8px; }
+        /* Busca e Voltar */
+        .search-container { max-width: 800px; margin: 0 auto 20px; display: flex; gap: 8px; flex-direction: column; }
+        .search-row { display: flex; gap: 8px; width: 100%; }
         .search-input { flex-grow: 1; padding: 12px 18px; border-radius: 50px; border: 1px solid #444; background: rgba(0,0,0,0.5); color: white; outline: none; font-size: 16px; }
         .btn-search { background: var(--claro-red); border: none; border-radius: 50px; padding: 0 20px; color: white; font-weight: bold; cursor: pointer; }
+        .btn-reset { background: #444; color: white; border: none; padding: 10px; border-radius: 50px; font-size: 12px; cursor: pointer; display: none; align-self: center; margin-top: 5px; }
 
         /* Navegação */
-        .header-nav { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; align-items: center; }
+        .header-nav { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; align-items: center; }
         .btn-coming-soon { background: var(--accent-gold); color: black; padding: 12px 20px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; max-width: 300px; }
         .dropdown { position: relative; width: 100%; max-width: 300px; }
         .dropbtn { background: #222; color: white; padding: 12px; border: 1px solid var(--claro-red); border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: center; }
-        .dropdown-content { display: none; position: absolute; background: #222; width: 100%; z-index: 1000; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); border: 1px solid #444; margin-top: 5px; }
+        .dropdown-content { display: none; position: absolute; background: #222; width: 100%; z-index: 1000; border-radius: 8px; border: 1px solid #444; margin-top: 5px; }
         .dropdown-content a { color: white; padding: 15px; text-decoration: none; display: block; border-bottom: 1px solid #333; }
         .dropdown-content.show { display: block; }
 
@@ -36,42 +38,13 @@
         .card-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
         .card-content { padding: 12px; flex-grow: 1; text-align: center; }
         .card-title { font-size: 0.9rem; margin-bottom: 10px; height: 38px; overflow: hidden; font-weight: bold; color: #fff; }
-        .btn-yt { background: var(--claro-red); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 5px; }
+        .btn-yt { background: var(--claro-red); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 5px; text-decoration: none; display: block; font-size: 14px; }
         .btn-temp { background: transparent; color: white; border: 1px solid #555; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 12px; }
 
-        /* MODAL CORRIGIDO PARA NÃO CORTAR NO CELULAR */
-        #modal-temporadas { 
-            display: none; 
-            position: fixed; 
-            z-index: 2000; 
-            left: 0; top: 0; 
-            width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.95); 
-            padding: 10px; 
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-body { 
-            background: #111; 
-            padding: 20px; 
-            width: 100%; 
-            max-width: 500px; 
-            max-height: 90vh; /* Ocupa no máximo 90% da altura da tela */
-            border-radius: 20px; 
-            border: 1px solid var(--claro-red); 
-            overflow-y: auto; /* Permite rolagem interna se a lista for grande */
-            position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-
-        .btn-temp-item { 
-            background: #222; color: white; border: 1px solid #444; 
-            padding: 12px; border-radius: 10px; width: 100%; 
-            margin-bottom: 8px; text-align: left; font-weight: bold;
-        }
+        /* MODAL SEM CORTES */
+        #modal-temporadas { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 10px; box-sizing: border-box; align-items: center; justify-content: center; }
+        .modal-body { background: #111; padding: 20px; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 20px; border: 1px solid var(--claro-red); overflow-y: auto; position: relative; }
+        .btn-temp-item { background: #222; color: white; border: 1px solid #444; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 8px; text-align: left; font-weight: bold; }
 
         @media (max-width: 1024px) { .grid-layout { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 600px) { .grid-layout { grid-template-columns: repeat(2, 1fr); } }
@@ -80,8 +53,11 @@
 <body>
 
     <div class="search-container">
-        <input type="text" id="input-busca" class="search-input" placeholder="Ex: As Branquelas, Shogun...">
-        <button class="btn-search" onclick="realizarBusca()">🔍</button>
+        <div class="search-row">
+            <input type="text" id="input-busca" class="search-input" placeholder="Buscar no catálogo...">
+            <button class="btn-search" onclick="realizarBusca()">🔍</button>
+        </div>
+        <button id="btn-voltar" class="btn-reset" onclick="init()">← Voltar para Início</button>
     </div>
 
     <nav class="header-nav">
@@ -112,7 +88,7 @@
         <div id="grid-series" class="grid-layout"></div>
     </main>
 
-    <div id="modal-temporadas" style="display:none;">
+    <div id="modal-temporadas" style="display:none;" onclick="event.target == this ? fecharModal() : null">
         <div class="modal-body">
             <span style="position: sticky; top: 0; float:right; cursor:pointer; font-size:2rem; color:var(--claro-red); line-height: 1;" onclick="fecharModal()">&times;</span>
             <div id="lista-detalhada"></div>
@@ -125,6 +101,15 @@
         let streamingAtual = "", periodoAtual = "";
 
         function toggleDropdown() { document.getElementById('drop-content').classList.toggle('show'); }
+
+        async function init() {
+            periodoAtual = ""; streamingAtual = "";
+            document.getElementById('btn-voltar').style.display = 'none';
+            document.getElementById('input-busca').value = '';
+            document.getElementById('label-tempo').innerText = 'EXPLORAR TEMPO ▾';
+            document.querySelectorAll('.btn-filter-logo').forEach(b => b.classList.remove('active'));
+            aplicarFiltros();
+        }
 
         async function setPeriodo(data, label) {
             periodoAtual = data ? `&primary_release_date.gte=${data}&first_air_date.gte=${data}` : '';
@@ -161,10 +146,10 @@
                 container.innerHTML += `
                     <div class="card">
                         <div class="streaming-frame">${br || '<span style="font-size:10px">Ver no App</span>'}</div>
-                        <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="card-poster">
+                        <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="card-poster" onerror="this.src='https://via.placeholder.com/200x300?text=Indisponível'">
                         <div class="card-content">
                             <h3 class="card-title">${item.title || item.name}</h3>
-                            <button class="btn-yt" onclick="window.open('https://www.youtube.com/results?search_query=${item.title || item.name}+trailer')">Assistir</button>
+                            <a class="btn-yt" href="https://www.youtube.com/results?search_query=${item.title || item.name}+trailer" target="_blank">Assistir</a>
                             ${tipo === 'tv' ? `<button class="btn-temp" onclick="abrirTemporadas(${item.id})">Temporadas</button>` : ''}
                         </div>
                     </div>`;
@@ -173,7 +158,8 @@
 
         async function realizarBusca() {
             const q = document.getElementById('input-busca').value;
-            if(!q) return aplicarFiltros();
+            if(!q) return init();
+            document.getElementById('btn-voltar').style.display = 'block';
             const url = (t) => `${BASE_URL}/search/${t}?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(q)}&region=BR`;
             const resM = await fetch(url('movie')).then(r => r.json());
             const resT = await fetch(url('tv')).then(r => r.json());
@@ -200,13 +186,14 @@
         }
 
         function fecharModal() { document.getElementById('modal-temporadas').style.display = "none"; }
+        
         async function buscarVemAi() {
             const h = new Date().toISOString().split('T')[0];
             const f = `&primary_release_date.gte=${h}&first_air_date.gte=${h}&sort_by=primary_release_date.asc`;
             carregarDados('movie', 'grid-filmes', f); carregarDados('tv', 'grid-series', f);
         }
 
-        aplicarFiltros();
+        init();
     </script>
 </body>
 </html>
