@@ -8,6 +8,7 @@
         :root { --claro-red: #ee1d23; --deep-black: #0a0a0a; --surface: #1a1a1a; --accent-gold: #ffd700; }
         body { background: radial-gradient(circle at top, #3a0000 0%, #0a0a0a 100%) fixed; color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; -webkit-tap-highlight-color: transparent; }
         
+        /* Barra de Busca e Reset */
         .search-container { max-width: 800px; margin: 0 auto 20px; display: flex; flex-direction: column; gap: 8px; }
         .search-row { display: flex; gap: 8px; width: 100%; }
         .search-input { flex-grow: 1; padding: 12px 18px; border-radius: 50px; border: 1px solid #444; background: rgba(0,0,0,0.5); color: white; outline: none; font-size: 16px; }
@@ -17,17 +18,36 @@
         .header-nav { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; align-items: center; }
         .btn-coming-soon { background: var(--accent-gold); color: black; padding: 12px 20px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; max-width: 300px; text-transform: uppercase; margin-bottom: 5px; }
 
-        .dropdown-row { display: flex; gap: 10px; width: 100%; max-width: 500px; justify-content: center; }
+        /* DROPDOWNS CORRIGIDOS PARA MOBILE */
+        .dropdown-row { display: flex; gap: 10px; width: 100%; max-width: 500px; justify-content: center; position: relative; }
         .dropdown { position: relative; flex: 1; }
         .dropbtn { background: #222; color: white; padding: 12px; border: 1px solid var(--claro-red); border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: center; font-size: 13px; }
-        .dropdown-content { display: none; position: absolute; background: #222; width: 100%; z-index: 1000; border-radius: 8px; border: 1px solid #444; margin-top: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); max-height: 300px; overflow-y: auto; }
+        
+        .dropdown-content { 
+            display: none; 
+            position: absolute; 
+            background: #222; 
+            width: 180%; /* Mais largo para não quebrar o texto */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000; 
+            border-radius: 8px; 
+            border: 1px solid #444; 
+            margin-top: 5px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+            max-height: 300px; 
+            overflow-y: auto; 
+        }
+        .dropdown-content a { color: white; padding: 15px; text-decoration: none; display: block; border-bottom: 1px solid #333; font-size: 14px; text-align: center; }
         .dropdown-content.show { display: block; }
 
-        .streaming-filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
-        .btn-filter-logo { background: #000; border: 1px solid #444; border-radius: 12px; cursor: pointer; width: 65px; height: 50px; padding: 6px; display: flex; align-items: center; justify-content: center; }
-        .btn-filter-logo.active { border-color: var(--claro-red); box-shadow: 0 0 15px var(--claro-red); }
+        /* Streaming Filtros */
+        .streaming-filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
+        .btn-filter-logo { background: #000; border: 1px solid #444; border-radius: 12px; cursor: pointer; width: 60px; height: 50px; padding: 6px; display: flex; align-items: center; justify-content: center; }
+        .btn-filter-logo.active { border-color: var(--claro-red); box-shadow: 0 0 10px var(--claro-red); }
         .btn-filter-logo img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
+        /* Grid e Card */
         .grid-layout { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 40px; }
         .card { background: var(--surface); border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #333; position: relative; }
         .streaming-frame { background: #000; padding: 6px; display: flex; justify-content: center; gap: 6px; border-bottom: 2px solid var(--claro-red); min-height: 30px; align-items: center; }
@@ -40,13 +60,10 @@
         .btn-synop { background: #333; color: white; border: 1px solid #555; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 12px; }
         .btn-temp { background: transparent; color: white; border: 1px solid #555; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 12px; }
 
-        .movie-synopsis-box { display: none; font-size: 0.75rem; color: #ccc; margin-top: 5px; text-align: left; background: #000; padding: 8px; border-radius: 5px; }
-
+        /* Modais */
         .modal-overlay { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 10px; box-sizing: border-box; align-items:center; justify-content:center; }
         .modal-body { background: #111; padding: 20px; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 20px; border: 1px solid var(--claro-red); overflow-y: auto; position: relative; }
-        .close-x { position: sticky; top: 0; float:right; cursor:pointer; font-size:1.8rem; color:var(--claro-red); background: #111; border-radius: 50%; }
-
-        .ep-button { background: none; border: none; color: white; text-align: left; width: 100%; padding: 10px 0; border-bottom: 1px solid #222; cursor: pointer; }
+        .close-x { position: sticky; top: 0; float:right; cursor:pointer; font-size:1.8rem; color:var(--claro-red); background: #111; border-radius: 50%; padding: 5px; }
 
         @media (max-width: 1024px) { .grid-layout { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 600px) { .grid-layout { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
@@ -64,6 +81,7 @@
 
     <nav class="header-nav">
         <button class="btn-coming-soon" onclick="buscarVemAi()">📅 VEM AÍ...</button>
+        
         <div class="dropdown-row">
             <div class="dropdown">
                 <button class="dropbtn" id="label-tempo" onclick="toggleDropdown('drop-tempo')">TEMPO ▾</button>
@@ -74,6 +92,7 @@
                     <a onclick="setPeriodo('', 'Todo o histórico')">Todo o histórico</a>
                 </div>
             </div>
+
             <div class="dropdown">
                 <button class="dropbtn" id="label-genero" onclick="toggleDropdown('drop-genero')">GÊNERO ▾</button>
                 <div id="drop-genero" class="dropdown-content">
@@ -85,6 +104,7 @@
                 </div>
             </div>
         </div>
+
         <div class="streaming-filters">
             <button class="btn-filter-logo" onclick="setStreaming(8, this)" title="Netflix"><img src="https://cdn.ome.lt/3ElaNADWztHsI40J6dHqpTP_Vt8=/987x0/smart/filters:format(webp)/uploads/conteudo/fotos/BrandAssets_Logos_01-Wordmark.png"></button>
             <button class="btn-filter-logo" onclick="setStreaming(337, this)" title="Disney+"><img src="https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/C67C35CF0EB8C168A861956E743C6CCD26BFB17B93227234F3CD1A81BB728F35/compose?format=webp&width=270"></button>
@@ -124,8 +144,8 @@
         function toggleDropdown(id) { 
             const el = document.getElementById(id);
             const isVisible = el.style.display === "block";
-            document.querySelectorAll('.dropdown-content').forEach(d => d.style.display = 'none');
-            el.style.display = isVisible ? "none" : "block";
+            document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
+            if (!isVisible) el.classList.add('show');
         }
 
         async function init() {
@@ -142,7 +162,8 @@
             periodoAtual = data ? `&primary_release_date.gte=${data}&first_air_date.gte=${data}` : '';
             document.getElementById('label-tempo').innerText = label;
             document.getElementById('btn-voltar').style.display = 'block';
-            toggleDropdown('drop-tempo'); aplicarFiltros();
+            document.getElementById('drop-tempo').classList.remove('show');
+            aplicarFiltros();
         }
 
         async function setGenero(idM, idS, label) {
@@ -150,7 +171,8 @@
             genSerie = idS ? `&with_genres=${idS}` : '';
             document.getElementById('label-genero').innerText = label;
             document.getElementById('btn-voltar').style.display = 'block';
-            toggleDropdown('drop-genero'); aplicarFiltros();
+            document.getElementById('drop-genero').classList.remove('show');
+            aplicarFiltros();
         }
 
         function setStreaming(id, btn) {
@@ -204,7 +226,7 @@
         }
 
         function abrirSinopseSerie(titulo, texto) {
-            document.getElementById('conteudo-modal').innerHTML = `<h2>${titulo}</h2><p style="font-size:14px">${texto}</p>`;
+            document.getElementById('conteudo-modal').innerHTML = `<h2>${titulo}</h2><p style="font-size:14px; line-height:1.6">${texto}</p>`;
             document.getElementById('modal-geral').style.display = "flex";
         }
 
@@ -226,14 +248,14 @@
             if(c.style.display === "block") { c.style.display = "none"; return; }
             const res = await fetch(`${BASE_URL}/tv/${id}/season/${n}?api_key=${API_KEY}&language=pt-BR`).then(r => r.json());
             c.innerHTML = res.episodes.map(e => `
-                <button class="ep-button" onclick="abrirSinopseEpisodio('${e.name.replace(/'/g, "")}', '${(e.overview || "Sem sinopse").replace(/'/g, "")}')">
+                <button style="background:none; border:none; color:white; text-align:left; width:100%; padding:10px 0; border-bottom:1px solid #222; cursor:pointer;" onclick="abrirSinopseEpisodio('${e.name.replace(/'/g, "")}', '${(e.overview || "Sem sinopse").replace(/'/g, "")}')">
                     ${e.episode_number}. ${e.name}
                 </button>`).join('');
             c.style.display = "block";
         }
 
         function abrirSinopseEpisodio(nome, sinopse) {
-            document.getElementById('conteudo-episodio').innerHTML = `<h3>${nome}</h3><p>${sinopse}</p>`;
+            document.getElementById('conteudo-episodio').innerHTML = `<h3>${nome}</h3><p style="font-size:14px; line-height:1.5">${sinopse}</p>`;
             document.getElementById('modal-episodio').style.display = "flex";
         }
 
