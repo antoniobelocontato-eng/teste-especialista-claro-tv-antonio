@@ -8,35 +8,28 @@
         :root { --claro-red: #ee1d23; --deep-black: #0a0a0a; --surface: #1a1a1a; --accent-gold: #ffd700; }
         body { background: radial-gradient(circle at top, #3a0000 0%, #0a0a0a 100%) fixed; color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; -webkit-tap-highlight-color: transparent; }
         
-        /* Barra de Busca e Reset */
+        /* Busca e Reset */
         .search-container { max-width: 800px; margin: 0 auto 20px; display: flex; flex-direction: column; gap: 8px; }
         .search-row { display: flex; gap: 8px; width: 100%; }
         .search-input { flex-grow: 1; padding: 12px 18px; border-radius: 50px; border: 1px solid #444; background: rgba(0,0,0,0.5); color: white; outline: none; font-size: 16px; }
         .btn-search { background: var(--claro-red); border: none; border-radius: 50px; padding: 0 20px; color: white; font-weight: bold; cursor: pointer; }
         .btn-reset { background: #444; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-size: 12px; cursor: pointer; display: none; align-self: center; font-weight: bold; margin-top: 10px; }
 
+        /* Navegação */
         .header-nav { display: flex; flex-direction: column; gap: 12px; margin-bottom: 30px; align-items: center; }
         .btn-coming-soon { background: var(--accent-gold); color: black; padding: 12px 20px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; max-width: 300px; text-transform: uppercase; margin-bottom: 5px; }
 
-        /* DROPDOWNS CORRIGIDOS PARA MOBILE */
+        /* Dropdowns Corrigidos */
         .dropdown-row { display: flex; gap: 10px; width: 100%; max-width: 500px; justify-content: center; position: relative; }
         .dropdown { position: relative; flex: 1; }
         .dropbtn { background: #222; color: white; padding: 12px; border: 1px solid var(--claro-red); border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: center; font-size: 13px; }
         
         .dropdown-content { 
-            display: none; 
-            position: absolute; 
-            background: #222; 
-            width: 180%; /* Mais largo para não quebrar o texto */
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000; 
-            border-radius: 8px; 
-            border: 1px solid #444; 
-            margin-top: 5px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
-            max-height: 300px; 
-            overflow-y: auto; 
+            display: none; position: absolute; background: #222; 
+            width: 170%; left: 50%; transform: translateX(-50%);
+            z-index: 1000; border-radius: 8px; border: 1px solid #444; 
+            margin-top: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); 
+            max-height: 350px; overflow-y: auto;
         }
         .dropdown-content a { color: white; padding: 15px; text-decoration: none; display: block; border-bottom: 1px solid #333; font-size: 14px; text-align: center; }
         .dropdown-content.show { display: block; }
@@ -47,12 +40,12 @@
         .btn-filter-logo.active { border-color: var(--claro-red); box-shadow: 0 0 10px var(--claro-red); }
         .btn-filter-logo img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
-        /* Grid e Card */
+        /* Grid */
         .grid-layout { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 40px; }
         .card { background: var(--surface); border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #333; position: relative; }
         .streaming-frame { background: #000; padding: 6px; display: flex; justify-content: center; gap: 6px; border-bottom: 2px solid var(--claro-red); min-height: 30px; align-items: center; }
         .mini-logo { width: 22px; height: 22px; border-radius: 3px; object-fit: contain; }
-        .card-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+        .card-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #000; }
         .card-content { padding: 12px; flex-grow: 1; text-align: center; display: flex; flex-direction: column; gap: 5px; }
         .card-title { font-size: 0.9rem; margin-bottom: 5px; height: 38px; overflow: hidden; font-weight: bold; color: #fff; line-height: 1.2; }
         
@@ -60,10 +53,14 @@
         .btn-synop { background: #333; color: white; border: 1px solid #555; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 12px; }
         .btn-temp { background: transparent; color: white; border: 1px solid #555; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 12px; }
 
+        .movie-synopsis-box { display: none; font-size: 0.75rem; color: #ccc; margin-top: 5px; text-align: left; background: #000; padding: 8px; border-radius: 5px; }
+
         /* Modais */
         .modal-overlay { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 10px; box-sizing: border-box; align-items:center; justify-content:center; }
         .modal-body { background: #111; padding: 20px; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 20px; border: 1px solid var(--claro-red); overflow-y: auto; position: relative; }
         .close-x { position: sticky; top: 0; float:right; cursor:pointer; font-size:1.8rem; color:var(--claro-red); background: #111; border-radius: 50%; padding: 5px; }
+
+        .ep-button { background: none; border: none; color: white; text-align: left; width: 100%; padding: 12px 0; border-bottom: 1px solid #222; cursor: pointer; font-size: 14px; }
 
         @media (max-width: 1024px) { .grid-layout { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 600px) { .grid-layout { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
@@ -96,10 +93,15 @@
             <div class="dropdown">
                 <button class="dropbtn" id="label-genero" onclick="toggleDropdown('drop-genero')">GÊNERO ▾</button>
                 <div id="drop-genero" class="dropdown-content">
-                    <a onclick="setGenero('', '', 'Todos os Gêneros')">Todos</a>
+                    <a onclick="setGenero('', '', 'Todos')">Todos os Gêneros</a>
                     <a onclick="setGenero('28', '10759', 'Ação')">Ação</a>
+                    <a onclick="setGenero('16', '16', 'Animação/Kids')">Animação & Kids</a>
+                    <a onclick="setGenero('12', '10759', 'Aventura')">Aventura</a>
                     <a onclick="setGenero('35', '35', 'Comédia')">Comédia</a>
+                    <a onclick="setGenero('99', '99', 'Documentário')">Documentário</a>
                     <a onclick="setGenero('18', '18', 'Drama')">Drama</a>
+                    <a onclick="setGenero('10749', '10749', 'Romance')">Romance</a>
+                    <a onclick="setGenero('53', '9648', 'Suspense')">Suspense</a>
                     <a onclick="setGenero('27', '9648', 'Terror')">Terror</a>
                 </div>
             </div>
@@ -116,9 +118,9 @@
     </nav>
 
     <main>
-        <h2 id="t1" style="border-left: 4px solid var(--claro-red); padding-left: 10px;">🎬 Filmes</h2>
+        <h2 id="t1" style="border-left: 4px solid var(--claro-red); padding-left: 10px;">🎬 Filmes Populares</h2>
         <div id="grid-filmes" class="grid-layout"></div>
-        <h2 id="t2" style="border-left: 4px solid var(--claro-red); padding-left: 10px;">🍿 Séries</h2>
+        <h2 id="t2" style="border-left: 4px solid var(--claro-red); padding-left: 10px;">🍿 Séries Populares</h2>
         <div id="grid-series" class="grid-layout"></div>
     </main>
 
@@ -143,7 +145,7 @@
 
         function toggleDropdown(id) { 
             const el = document.getElementById(id);
-            const isVisible = el.style.display === "block";
+            const isVisible = el.classList.contains('show');
             document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
             if (!isVisible) el.classList.add('show');
         }
@@ -213,7 +215,7 @@
                                 `<button class="btn-synop" onclick="toggleMovieSynop(${item.id})">Sinopse</button>
                                  <div id="synop-movie-${item.id}" class="movie-synopsis-box">${item.overview || "Sinopse não disponível."}</div>` 
                                 : 
-                                `<button class="btn-synop" onclick="abrirSinopseSerie('${item.name.replace(/'/g, "")}', '${(item.overview || "Sem sinopse").replace(/'/g, "")}')">Sinopse da Série</button>
+                                `<button class="btn-synop" onclick="abrirSinopseSerie('${(item.name || "").replace(/'/g, "")}', '${(item.overview || "Sem sinopse").replace(/'/g, "")}')">Sinopse da Série</button>
                                  <button class="btn-temp" onclick="abrirTemporadas(${item.id})">Temporadas</button>`}
                         </div>
                     </div>`;
@@ -235,7 +237,7 @@
             let h = `<h2>${res.name}</h2>`;
             res.seasons.forEach(t => {
                 if(t.season_number > 0) {
-                    h += `<button class="btn-temp" style="width:100%; text-align:left; margin-bottom:5px" onclick="toggleEp(${id},${t.season_number})">▼ ${t.name}</button>
+                    h += `<button class="dropbtn" style="width:100%; text-align:left; margin-bottom:5px" onclick="toggleEp(${id},${t.season_number})">▼ ${t.name}</button>
                           <div id="eps-${t.season_number}" style="display:none; padding:10px; background:#1a1a1a"></div>`;
                 }
             });
@@ -248,7 +250,7 @@
             if(c.style.display === "block") { c.style.display = "none"; return; }
             const res = await fetch(`${BASE_URL}/tv/${id}/season/${n}?api_key=${API_KEY}&language=pt-BR`).then(r => r.json());
             c.innerHTML = res.episodes.map(e => `
-                <button style="background:none; border:none; color:white; text-align:left; width:100%; padding:10px 0; border-bottom:1px solid #222; cursor:pointer;" onclick="abrirSinopseEpisodio('${e.name.replace(/'/g, "")}', '${(e.overview || "Sem sinopse").replace(/'/g, "")}')">
+                <button class="ep-button" onclick="abrirSinopseEpisodio('${(e.name || "").replace(/'/g, "")}', '${(e.overview || "Sem sinopse").replace(/'/g, "")}')">
                     ${e.episode_number}. ${e.name}
                 </button>`).join('');
             c.style.display = "block";
