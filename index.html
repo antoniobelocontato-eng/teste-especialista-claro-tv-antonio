@@ -33,21 +33,30 @@
         .btn-filter-logo.active { border-color: var(--claro-red); box-shadow: 0 0 15px var(--claro-red); background: rgba(238, 29, 35, 0.1); }
         .btn-filter-logo img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
-        /* Grid */
+        /* Grid e Card */
         .grid-layout { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 40px; }
         .card { background: var(--surface); border-radius: 15px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #333; position: relative; }
         .streaming-frame { background: #000; padding: 6px; display: flex; justify-content: center; gap: 6px; border-bottom: 2px solid var(--claro-red); min-height: 30px; align-items: center; }
         .mini-logo { width: 22px; height: 22px; border-radius: 3px; object-fit: contain; }
         .card-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #000; }
-        .card-content { padding: 12px; flex-grow: 1; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
-        .card-title { font-size: 0.9rem; margin-bottom: 10px; height: 38px; overflow: hidden; font-weight: bold; color: #fff; line-height: 1.2; }
-        .btn-yt { background: var(--claro-red); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 14px; text-decoration: none; display: block; margin-bottom: 5px; }
+        .card-content { padding: 12px; flex-grow: 1; text-align: center; display: flex; flex-direction: column; gap: 5px; }
+        .card-title { font-size: 0.9rem; margin-bottom: 5px; height: 38px; overflow: hidden; font-weight: bold; color: #fff; line-height: 1.2; }
+        
+        .btn-yt { background: var(--claro-red); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 13px; text-decoration: none; }
+        .btn-synop { background: #333; color: white; border: 1px solid #555; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 12px; }
         .btn-temp { background: transparent; color: white; border: 1px solid #555; padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 12px; }
 
-        /* Modal */
-        #modal-temporadas { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 10px; box-sizing: border-box; align-items:center; justify-content:center; }
+        /* Estilo da Sinopse Oculta no Card de Filme */
+        .movie-synopsis-box { display: none; font-size: 0.75rem; color: #ccc; margin-top: 5px; text-align: left; background: #000; padding: 8px; border-radius: 5px; }
+
+        /* Modais */
+        .modal-overlay { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); padding: 10px; box-sizing: border-box; align-items:center; justify-content:center; }
         .modal-body { background: #111; padding: 20px; width: 100%; max-width: 500px; max-height: 85vh; border-radius: 20px; border: 1px solid var(--claro-red); overflow-y: auto; position: relative; }
-        .close-x { position: sticky; top: 0; float:right; cursor:pointer; font-size:2rem; color:var(--claro-red); line-height: 1; z-index: 100; background: #111; border-radius: 50%; }
+        .close-x { position: sticky; top: 0; float:right; cursor:pointer; font-size:1.8rem; color:var(--claro-red); line-height: 1; z-index: 100; background: #111; border-radius: 50%; }
+
+        /* Lista de Episódios */
+        .ep-button { background: none; border: none; color: white; text-align: left; width: 100%; padding: 8px 0; border-bottom: 1px solid #222; cursor: pointer; font-size: 14px; }
+        .ep-button:hover { color: var(--claro-red); }
 
         @media (max-width: 1024px) { .grid-layout { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 600px) { .grid-layout { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
@@ -104,16 +113,23 @@
     </nav>
 
     <main>
-        <h2 id="t1" style="border-left: 4px solid var(--claro-red); padding-left: 10px;">🎬 Filmes Populares</h2>
+        <h2 id="t1" style="border-left: 4px solid var(--claro-red); padding-left: 10px;">🎬 Filmes</h2>
         <div id="grid-filmes" class="grid-layout"></div>
-        <h2 id="t2" style="border-left: 4px solid var(--claro-red); padding-left: 10px;">🍿 Séries Populares</h2>
+        <h2 id="t2" style="border-left: 4px solid var(--claro-red); padding-left: 10px;">🍿 Séries</h2>
         <div id="grid-series" class="grid-layout"></div>
     </main>
 
-    <div id="modal-temporadas" onclick="event.target == this ? fecharModal() : null">
+    <div id="modal-geral" class="modal-overlay" onclick="event.target == this ? fecharModal('modal-geral') : null">
         <div class="modal-body">
-            <span class="close-x" onclick="fecharModal()">&times;</span>
-            <div id="lista-detalhada"></div>
+            <span class="close-x" onclick="fecharModal('modal-geral')">&times;</span>
+            <div id="conteudo-modal"></div>
+        </div>
+    </div>
+
+    <div id="modal-episodio" class="modal-overlay" style="z-index:3000" onclick="fecharModal('modal-episodio')">
+        <div class="modal-body" style="border-color: var(--accent-gold); max-width: 400px;">
+            <span class="close-x" style="color: var(--accent-gold)" onclick="fecharModal('modal-episodio')">&times;</span>
+            <div id="conteudo-episodio"></div>
         </div>
     </div>
 
@@ -180,18 +196,66 @@
             for (const item of lista) {
                 const provRes = await fetch(`${BASE_URL}/${tipo}/${item.id}/watch/providers?api_key=${API_KEY}`).then(r => r.json());
                 const br = (provRes.results?.BR?.flatrate || []).slice(0, 3).map(p => `<img src="https://image.tmdb.org/t/p/w500${p.logo_path}" class="mini-logo">`).join('');
-                container.innerHTML += `
+                
+                const cardHtml = `
                     <div class="card">
                         <div class="streaming-frame">${br || '<span style="font-size:10px">Ver no App</span>'}</div>
                         <img src="https://image.tmdb.org/t/p/w500${item.poster_path}" class="card-poster" onerror="this.src='https://via.placeholder.com/200x300?text=Indisponível'">
                         <div class="card-content">
                             <h3 class="card-title">${item.title || item.name}</h3>
                             <button class="btn-yt" onclick="window.open('https://www.youtube.com/results?search_query=${item.title || item.name}+trailer+oficial')">Ver Trailer</button>
-                            ${tipo === 'tv' ? `<button class="btn-temp" onclick="abrirTemporadas(${item.id})">Temporadas</button>` : ''}
+                            ${tipo === 'movie' ? 
+                                `<button class="btn-synop" onclick="toggleMovieSynop(${item.id})">Sinopse</button>
+                                 <div id="synop-movie-${item.id}" class="movie-synopsis-box">${item.overview || "Sinopse não disponível."}</div>` 
+                                : 
+                                `<button class="btn-synop" onclick="abrirSinopseSerie('${item.name.replace(/'/g, "")}', '${(item.overview || "Sem sinopse disponível").replace(/'/g, "")}')">Sinopse da Série</button>
+                                 <button class="btn-temp" onclick="abrirTemporadas(${item.id})">Temporadas</button>`}
                         </div>
                     </div>`;
+                container.innerHTML += cardHtml;
             }
         }
+
+        function toggleMovieSynop(id) {
+            const box = document.getElementById(`synop-movie-${id}`);
+            box.style.display = box.style.display === "block" ? "none" : "block";
+        }
+
+        function abrirSinopseSerie(titulo, texto) {
+            document.getElementById('conteudo-modal').innerHTML = `<h2>${titulo}</h2><p style="font-size:14px; line-height:1.6">${texto}</p>`;
+            document.getElementById('modal-geral').style.display = "flex";
+        }
+
+        async function abrirTemporadas(id) {
+            const res = await fetch(`${BASE_URL}/tv/${id}?api_key=${API_KEY}&language=pt-BR`).then(r => r.json());
+            let h = `<h2 style="margin-top:0">${res.name}</h2>`;
+            res.seasons.forEach(t => {
+                if(t.season_number > 0) {
+                    h += `<button style="background:#222; color:white; border:1px solid #444; padding:12px; border-radius:10px; width:100%; margin-bottom:8px; text-align:left; font-weight:bold;" onclick="toggleEp(${id},${t.season_number})">▼ ${t.name}</button>
+                          <div id="eps-${t.season_number}" style="display:none; padding:10px; background:#1a1a1a; margin-bottom:10px; border-radius:10px;"></div>`;
+                }
+            });
+            document.getElementById('conteudo-modal').innerHTML = h;
+            document.getElementById('modal-geral').style.display = "flex";
+        }
+
+        async function toggleEp(id, n) {
+            const c = document.getElementById(`eps-${n}`);
+            if(c.style.display === "block") { c.style.display = "none"; return; }
+            const res = await fetch(`${BASE_URL}/tv/${id}/season/${n}?api_key=${API_KEY}&language=pt-BR`).then(r => r.json());
+            c.innerHTML = res.episodes.map(e => `
+                <button class="ep-button" onclick="abrirSinopseEpisodio('${e.name.replace(/'/g, "")}', '${(e.overview || "Sem sinopse disponível").replace(/'/g, "")}')">
+                    ${e.episode_number}. ${e.name}
+                </button>`).join('');
+            c.style.display = "block";
+        }
+
+        function abrirSinopseEpisodio(nome, sinopse) {
+            document.getElementById('conteudo-episodio').innerHTML = `<h3 style="color:var(--accent-gold); margin-top:0">${nome}</h3><p style="font-size:14px; line-height:1.5">${sinopse}</p>`;
+            document.getElementById('modal-episodio').style.display = "flex";
+        }
+
+        function fecharModal(id) { document.getElementById(id).style.display = "none"; }
 
         async function realizarBusca() {
             const q = document.getElementById('input-busca').value;
@@ -203,25 +267,6 @@
             renderCards(resT.results.slice(0, 5), 'grid-series', 'tv');
         }
 
-        async function abrirTemporadas(id) {
-            const res = await fetch(`${BASE_URL}/tv/${id}?api_key=${API_KEY}&language=pt-BR`).then(r => r.json());
-            let h = `<h2 style="margin-top:0">${res.name}</h2>`;
-            res.seasons.forEach(t => {
-                if(t.season_number > 0) h += `<button style="background:#222; color:white; border:1px solid #444; padding:12px; border-radius:10px; width:100%; margin-bottom:8px; text-align:left; font-weight:bold;" onclick="toggleEp(${id},${t.season_number})">▼ ${t.name} (${t.episode_count} eps)</button><div id="eps-${t.season_number}" style="display:none; padding:10px; background:#1a1a1a; margin-bottom:10px; border-radius:10px; font-size:14px"></div>`;
-            });
-            document.getElementById('lista-detalhada').innerHTML = h;
-            document.getElementById('modal-temporadas').style.display = "flex";
-        }
-
-        async function toggleEp(id, n) {
-            const c = document.getElementById(`eps-${n}`);
-            if(c.style.display === "block") { c.style.display = "none"; return; }
-            const res = await fetch(`${BASE_URL}/tv/${id}/season/${n}?api_key=${API_KEY}&language=pt-BR`).then(r => r.json());
-            c.innerHTML = res.episodes.map(e => `<div style="margin-bottom:8px; border-bottom: 1px solid #333; padding-bottom: 5px;"><strong>${e.episode_number}. ${e.name}</strong></div>`).join('');
-            c.style.display = "block";
-        }
-
-        function fecharModal() { document.getElementById('modal-temporadas').style.display = "none"; }
         async function buscarVemAi() {
             document.getElementById('btn-voltar').style.display = 'block';
             const h = new Date().toISOString().split('T')[0];
